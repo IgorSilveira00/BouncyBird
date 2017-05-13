@@ -86,6 +86,11 @@ public class GameController implements ContactListener{
      */
     private float accumulator;
 
+    /**
+     * Corrects gaps between spikes and edges.
+     */
+    public static final float corrector = 0.9f;
+
     private int DIFFICULTY_COUNTER = 0;
 
     private boolean readyToRemove = false;
@@ -238,7 +243,7 @@ public class GameController implements ContactListener{
 
         if (GameView.isTWO_PLAYERS()) {
             for (Integer index: spikesIndexes) {
-                bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x +
+                bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x + corrector *
                                 (((SpikeModel) bodiesToMove.get(index).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? - GameModel.SPIKE_HEIGHT: GameModel.SPIKE_HEIGHT) ,
                         bodiesToMove.get(index).getPosition().y,
                         bodiesToMove.get(index).getAngle());
@@ -246,7 +251,7 @@ public class GameController implements ContactListener{
             }
         } else {
             for (Integer index: spikesIndexes) {
-                bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x + multiplier * GameModel.SPIKE_HEIGHT,
+                bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x + multiplier * corrector * GameModel.SPIKE_HEIGHT,
                         bodiesToMove.get(index).getPosition().y,
                         bodiesToMove.get(index).getAngle());
                 bodiesToRemove.add(bodiesToMove.get(index));
@@ -410,7 +415,7 @@ public class GameController implements ContactListener{
      */
     private void degrowSpikes() {
         for (int i = 0; i < bodiesToRemove.size(); i++)
-            bodiesToRemove.get(i).setTransform(bodiesToRemove.get(i).getPosition().x +
+            bodiesToRemove.get(i).setTransform(bodiesToRemove.get(i).getPosition().x + corrector *
                             (((SpikeModel) bodiesToMove.get(i).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? GameModel.SPIKE_HEIGHT: - GameModel.SPIKE_HEIGHT),
                     bodiesToRemove.get(i).getPosition().y,
                     bodiesToRemove.get(i).getAngle());

@@ -94,12 +94,12 @@ public class GameModel {
 
         for (int i = 0; i < AMOUNT_SPIKES; i++){
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
-                    SPIKE_HEIGHT - 1f,
+                    SPIKE_HEIGHT - GameController.corrector,
                     (float) Math.PI / 2,
                     EntityModel.ModelType.SPIKE));
 
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
-                    GameController.ROOM_HEIGHT - SPIKE_HEIGHT + 1f,
+                    GameController.ROOM_HEIGHT - SPIKE_HEIGHT + GameController.corrector,
                     - (float) Math.PI / 2,
                     EntityModel.ModelType.SPIKE));
 
