@@ -216,7 +216,7 @@ public class SettingsMenuView extends ScreenAdapter{
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
 
         game.getBatch().begin();
-        //drawBackground();
+        MainMenuView.drawBackground();
         drawEntities();
         game.getBatch().end();
 
