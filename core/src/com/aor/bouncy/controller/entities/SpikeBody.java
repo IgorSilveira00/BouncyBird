@@ -22,9 +22,6 @@ public class SpikeBody extends EntityBody{
         int width = 100, height = 100;
 
         // Upper triangle
-        createFixture(body, new float[]{0,15, 15,1, 85,1, 100,15, 0,85}, width, height, density, friction, restitution, SPIKE_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
-
-        // Bottom triangle
-        createFixture(body, new float[]{0,85, 100,15, 100,85, 85,99, 15,99}, width, height, density, friction, restitution, SPIKE_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
-    }
+        createFixture(body, new float[]{0,16, 99,49, 0,82}, width, height, density, friction, restitution, SPIKE_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
+     }
 }

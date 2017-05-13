@@ -4,6 +4,7 @@ import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.GameModel;
 import com.aor.bouncy.model.entities.BirdModel;
+import com.aor.bouncy.model.entities.BonusModel;
 import com.aor.bouncy.model.entities.EdgeModel;
 import com.aor.bouncy.model.entities.SpikeModel;
 import com.aor.bouncy.view.entities.EntityView;
@@ -36,7 +37,7 @@ public class GameView extends ScreenAdapter {
     /**
      * Used to debug the position of the physics fixtures
      */
-    private static final boolean DEBUG_PHYSICS = true;
+    private static final boolean DEBUG_PHYSICS = false;
 
     /**
      * How much meters does a pixel represent
@@ -215,21 +216,20 @@ public class GameView extends ScreenAdapter {
         scoreLabels.get(i).setText(Integer.toString(GameController.getGameScore()));
         scoreLabels.get(i).draw(game.getBatch(), 1);
         }
-        System.out.println(scoreLabels.size());
 
-        /*for (int i = 0; i < floor_ceiling_spikes.size(); i++) {
+        for (int i = 0; i < floor_ceiling_spikes.size(); i++) {
             EntityView view = ViewFactory.makeView(game, floor_ceiling_spikes.get(i));
             view.update(floor_ceiling_spikes.get(i));
             view.draw(game.getBatch());
         }
-        for (SpikeModel spike : right_wall_spikes) {
-            EntityView view = ViewFactory.makeView(game, spike);
-            view.update(spike);
+        for (int i = 0; i < right_wall_spikes.size(); i++) {
+            EntityView view = ViewFactory.makeView(game, right_wall_spikes.get(i));
+            view.update(right_wall_spikes.get(i));
             view.draw(game.getBatch());
         }
-        for (SpikeModel spike : left_wall_spikes) {
-            EntityView view = ViewFactory.makeView(game, spike);
-            view.update(spike);
+        for (int i = 0; i < left_wall_spikes.size(); i++) {
+            EntityView view = ViewFactory.makeView(game, left_wall_spikes.get(i));
+            view.update(left_wall_spikes.get(i));
             view.draw(game.getBatch());
         }
 
@@ -244,7 +244,7 @@ public class GameView extends ScreenAdapter {
             EntityView bonusView = ViewFactory.makeView(game, bonus);
             bonusView.update(bonus);
             bonusView.draw(game.getBatch());
-        }*/
+        }
 
         BirdModel bird = GameModel.getInstance().getBird().get(0);
         EntityView view = ViewFactory.makeView(game, bird);

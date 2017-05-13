@@ -1,7 +1,10 @@
 package com.aor.bouncy.view.entities;
 
 import com.aor.bouncy.MyBouncyBird;
+import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.entities.EntityModel;
+import com.aor.bouncy.view.GameView;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -48,7 +51,8 @@ public class EdgeView extends EntityView {
      * @return the texture used.
      */
     private TextureRegion createTexture(MyBouncyBird game) {
-        Texture texture = game.getAssetManager().get("test.png");
+        Texture texture = game.getAssetManager().get("floor.png");
+        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         return new TextureRegion(texture, texture.getWidth(), texture.getHeight());
     }
 
@@ -70,7 +74,6 @@ public class EdgeView extends EntityView {
     @Override
     public void draw(SpriteBatch batch) {
         sprite.setRegion(textureRegion);
-
         sprite.draw(batch);
     }
 }

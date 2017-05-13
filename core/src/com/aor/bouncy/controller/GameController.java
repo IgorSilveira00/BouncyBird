@@ -241,14 +241,14 @@ public class GameController implements ContactListener{
                 bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x +
                                 (((SpikeModel) bodiesToMove.get(index).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? - GameModel.SPIKE_HEIGHT: GameModel.SPIKE_HEIGHT) ,
                         bodiesToMove.get(index).getPosition().y,
-                        0);
+                        bodiesToMove.get(index).getAngle());
                 bodiesToRemove.add(bodiesToMove.get(index));
             }
         } else {
             for (Integer index: spikesIndexes) {
                 bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x + multiplier * GameModel.SPIKE_HEIGHT,
                         bodiesToMove.get(index).getPosition().y,
-                        0);
+                        bodiesToMove.get(index).getAngle());
                 bodiesToRemove.add(bodiesToMove.get(index));
             }
         }
@@ -329,7 +329,6 @@ public class GameController implements ContactListener{
             timeToNextBonus -= delta;
     }
 
-
     /**
      * Returns the current game score.
      * @return the game score.
@@ -378,7 +377,7 @@ public class GameController implements ContactListener{
 
     //TODO game over
     private void birdSpikeCollision(Body bodyA) {
-        END = true;
+        END = false;
     }
 
     /**
@@ -403,10 +402,8 @@ public class GameController implements ContactListener{
                 GameView.playHit();
             DIFFICULTY_COUNTER++;
         }
-
         readyToRemove = true;
     }
-
 
     /**
      * Removes grown spikes. They go back in.
@@ -416,7 +413,7 @@ public class GameController implements ContactListener{
             bodiesToRemove.get(i).setTransform(bodiesToRemove.get(i).getPosition().x +
                             (((SpikeModel) bodiesToMove.get(i).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? GameModel.SPIKE_HEIGHT: - GameModel.SPIKE_HEIGHT),
                     bodiesToRemove.get(i).getPosition().y,
-                    0);
+                    bodiesToRemove.get(i).getAngle());
 
         SPIKES_OUT = false;
         readyToRemove = false;

@@ -17,10 +17,10 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+
+import java.util.ArrayList;
 
 import static com.aor.bouncy.controller.GameController.*;
 
@@ -55,7 +55,7 @@ public class MainMenuView extends ScreenAdapter {
     /**
      * The game this screen belongs to.
      */
-    private final MyBouncyBird game;
+    private static MyBouncyBird game;
 
     /**
      * The camera used to show the viewport.
@@ -98,9 +98,9 @@ public class MainMenuView extends ScreenAdapter {
             game.getBACKGROUND_MUSIC().play();
         }
 
+        camera = createCamera();
         loadButtons();
         enableButtons();
-        camera = createCamera();
     }
 
     private void loadSounds() {
@@ -113,31 +113,38 @@ public class MainMenuView extends ScreenAdapter {
         BitmapFont font = new BitmapFont();
         Skin skin = new Skin();
         TextureAtlas textureAtlas = new TextureAtlas();
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle b1 = new TextButton.TextButtonStyle(),
+                b2 = new TextButton.TextButtonStyle(),
+                b3 = new TextButton.TextButtonStyle();
 
-        readTexture("play-up", "test.png", textureAtlas);
-        readTexture("play-down", "bt.JPG", textureAtlas);
+        readTexture("play-up", "play-up.png", textureAtlas);
+        readTexture("play-down", "play-down.png", textureAtlas);
+        readTexture("settings-up", "settings-up.png", textureAtlas);
+        readTexture("settings-down", "settings-down.png", textureAtlas);
+        readTexture("exit-up", "exit-up.png", textureAtlas);
+        readTexture("exit-down", "exit-down.png", textureAtlas);
         skin.addRegions(textureAtlas);
 
-        buttonStyle.font = font;
+        b1.font = font; b2.font = font; b3.font = font;
 
         //for the play button
-        buttonStyle.up = skin.getDrawable("play-up");
-        buttonStyle.down = skin.getDrawable("play-down");
-        PLAY_BUTTON = new TextButton("Play", buttonStyle);
-        PLAY_BUTTON.setPosition(10, Gdx.graphics.getHeight() / 2f + PLAY_BUTTON.getHeight() / 2f);
+        b1.up = skin.getDrawable("play-up");
+        b1.down = skin.getDrawable("play-down");
+        PLAY_BUTTON = new TextButton("", b1);
+        PLAY_BUTTON.setPosition(Gdx.graphics.getWidth() / 2f - PLAY_BUTTON.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f + PLAY_BUTTON.getHeight() / 2f);
 
         //for the settings button
-        buttonStyle.up = skin.getDrawable("play-up");
-        buttonStyle.down = skin.getDrawable("play-down");
-        SETTINGS_BUTTON = new TextButton("Settings", buttonStyle);
-        SETTINGS_BUTTON.setPosition(10, PLAY_BUTTON.getY() - SETTINGS_BUTTON.getHeight());
+        b2.up = skin.getDrawable("settings-up");
+        b2.down = skin.getDrawable("settings-down");
+        SETTINGS_BUTTON = new TextButton("", b2);
+        SETTINGS_BUTTON.setPosition(PLAY_BUTTON.getX(), PLAY_BUTTON.getY() - SETTINGS_BUTTON.getHeight());
 
         //for the Exit button
-        buttonStyle.up = skin.getDrawable("play-up");
-        buttonStyle.down = skin.getDrawable("play-down");
-        EXIT_BUTTON = new TextButton("Exit", buttonStyle);
-        EXIT_BUTTON.setPosition(10, SETTINGS_BUTTON.getY() - EXIT_BUTTON.getHeight());
+        b3.up = skin.getDrawable("exit-up");
+        b3.down = skin.getDrawable("exit-down");
+        EXIT_BUTTON = new TextButton("", b3);
+        EXIT_BUTTON.setPosition(SETTINGS_BUTTON.getX(), SETTINGS_BUTTON.getY() - EXIT_BUTTON.getHeight());
 
         addActors();
         addListeners();
@@ -230,6 +237,8 @@ public class MainMenuView extends ScreenAdapter {
     private void loadAssets() {
         this.game.getAssetManager().load( "bt.JPG" , Texture.class);
         this.game.getAssetManager().load( "test.png" , Texture.class);
+        this.game.getAssetManager().load("spike.png", Texture.class);
+        this.game.getAssetManager().load("floor.png", Texture.class);
         this.game.getAssetManager().load("background-music.mp3", Music.class);
         this.game.getAssetManager().load( "empty-check.png" , Texture.class);
         this.game.getAssetManager().load( "full-check.png" , Texture.class);
@@ -237,6 +246,19 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "back-down.png" , Texture.class);
         this.game.getAssetManager().load( "edge-hit.wav" , Sound.class);
         this.game.getAssetManager().load( "background.png" , Texture.class);
+        this.game.getAssetManager().load( "play-up.png" , Texture.class);
+        this.game.getAssetManager().load( "play-down.png" , Texture.class);
+        this.game.getAssetManager().load( "settings-up.png" , Texture.class);
+        this.game.getAssetManager().load( "settings-down.png" , Texture.class);
+        this.game.getAssetManager().load( "exit-up.png" , Texture.class);
+        this.game.getAssetManager().load( "exit-down.png" , Texture.class);
+        this.game.getAssetManager().load( "1plocal-up.png" , Texture.class);
+        this.game.getAssetManager().load( "1plocal-down.png" , Texture.class);
+        this.game.getAssetManager().load( "2plocal-up.png" , Texture.class);
+        this.game.getAssetManager().load( "2plocal-down.png" , Texture.class);
+        this.game.getAssetManager().load( "2pnet-up.png" , Texture.class);
+        this.game.getAssetManager().load( "2pnet-down.png" , Texture.class);
+        this.game.getAssetManager().load( "backplate.png" , Texture.class);
 
         this.game.getAssetManager().finishLoading();
     }
@@ -265,10 +287,19 @@ public class MainMenuView extends ScreenAdapter {
     /**
      * Draws the background
      */
-    private void drawBackground() {
+    public static void drawBackground() {
         Texture background = game.getAssetManager().get("background.png", Texture.class);
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         game.getBatch().draw(background, 0, 0, 0, 0, (int)(ROOM_WIDTH / PIXEL_TO_METER), (int) (ROOM_HEIGHT / PIXEL_TO_METER));
+
+        //back plate
+        Texture t = game.getAssetManager().get("backplate.png");
+        Image plate = new Image(t);
+
+        plate.scaleBy(2.4f);
+        plate.setPosition(Gdx.graphics.getWidth() / 2f + Math.round(0.1 * Gdx.graphics.getWidth()),
+                Gdx.graphics.getHeight() / 2f - Math.round(0.25 * Gdx.graphics.getHeight()));
+        plate.draw(game.getBatch(), 1);
     }
 
     public OrthographicCamera getCamera() {

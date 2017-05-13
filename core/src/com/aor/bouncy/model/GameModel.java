@@ -94,18 +94,18 @@ public class GameModel {
 
         for (int i = 0; i < AMOUNT_SPIKES; i++){
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
-                    SPIKE_HEIGHT / 2,
-                    0,
+                    SPIKE_HEIGHT - 1f,
+                    (float) Math.PI / 2,
                     EntityModel.ModelType.SPIKE));
 
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
-                    GameController.ROOM_HEIGHT - SPIKE_HEIGHT / 2,
-                    0,
+                    GameController.ROOM_HEIGHT - SPIKE_HEIGHT + 1f,
+                    - (float) Math.PI / 2,
                     EntityModel.ModelType.SPIKE));
 
             right_wall_spikes.add(new SpikeModel(GameController.ROOM_WIDTH,
                     SPIKE_HEIGHT + SPIKE_HEIGHT * i,
-                    0,
+                    (float) Math.PI,
                     EntityModel.ModelType.RIGHT_SPIKE));
 
             left_wall_spikes.add(new SpikeModel(0,
@@ -121,10 +121,10 @@ public class GameModel {
         edges.add(new EdgeModel(0, GameController.ROOM_HEIGHT - 1, 0));
 
         // left edge
-        edges.add(new EdgeModel(1.5f, 0, (float) Math.PI / 2));
+        edges.add(new EdgeModel(1f, 0, (float) Math.PI / 2));
 
         //right edge
-        edges.add(new EdgeModel(GameController.ROOM_WIDTH - 1.5f, GameController.ROOM_HEIGHT - 1 , (float) Math.PI / 2 ));
+        edges.add(new EdgeModel(GameController.ROOM_WIDTH - 1f, GameController.ROOM_HEIGHT - 1 , (float) Math.PI / 2 ));
     }
 
     /**

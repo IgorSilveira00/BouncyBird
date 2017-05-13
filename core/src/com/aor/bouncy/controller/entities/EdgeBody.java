@@ -21,7 +21,7 @@ public class EdgeBody extends EntityBody {
         super(world, model, BodyDef.BodyType.StaticBody);
 
         float density = 0.5f, friction = 0, restitution = 0f;
-        int width = Math.round(GameController.ROOM_WIDTH / GameView.PIXEL_TO_METER) * 2, height = 50;
+        int width = Math.round(GameController.ROOM_WIDTH / GameView.PIXEL_TO_METER) * 2, height = 60;
         // Create rectangular shape
         createFixture(body, new float[]{0,height, width,height, width,0, 0,0}, width, height, density, friction, restitution, EDGE_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
     }

@@ -81,41 +81,48 @@ public class PlayMenuView extends ScreenAdapter {
         BitmapFont font = new BitmapFont();
         Skin skin = new Skin();
         TextureAtlas textureAtlas = new TextureAtlas();
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(),
-                backButtonStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle b1 = new TextButton.TextButtonStyle(),
+                b2 = new TextButton.TextButtonStyle(),
+                b3 = new TextButton.TextButtonStyle(),
+                b4 = new TextButton.TextButtonStyle();
 
-        readTexture("play-up", "test.png", textureAtlas);
-        readTexture("play-down", "bt.JPG", textureAtlas);
+        readTexture("1plocal-up", "1plocal-up.png", textureAtlas);
+        readTexture("1plocal-down", "1plocal-down.png", textureAtlas);
+        readTexture("2plocal-up", "2plocal-up.png", textureAtlas);
+        readTexture("2plocal-down", "2plocal-down.png", textureAtlas);
+        readTexture("2pnet-up", "2pnet-up.png", textureAtlas);
+        readTexture("2pnet-down", "2pnet-down.png", textureAtlas);
         readTexture("back-up", "back-up.png", textureAtlas);
         readTexture("back-down", "back-down.png", textureAtlas);
         skin.addRegions(textureAtlas);
 
-        buttonStyle.font = font; backButtonStyle.font = font;
+        b1.font = font; b2.font = font; b3.font = font; b4.font = font;
 
         //for the 1 local player game button
-        buttonStyle.up = skin.getDrawable("play-up");
-        buttonStyle.down = skin.getDrawable("play-down");
-        ONE_PLAY_BUTTON = new TextButton("1P Local", buttonStyle);
-        ONE_PLAY_BUTTON.setPosition(20, Gdx.graphics.getHeight() / 2f + ONE_PLAY_BUTTON.getHeight() / 2f);
+        b1.up = skin.getDrawable("1plocal-up");
+        b1.down = skin.getDrawable("1plocal-down");
+        ONE_PLAY_BUTTON = new TextButton("", b1);
+        ONE_PLAY_BUTTON.setPosition(Gdx.graphics.getWidth() / 2f - ONE_PLAY_BUTTON.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f + ONE_PLAY_BUTTON.getHeight() / 2f);
 
         //for the 2 local players game button
-        buttonStyle.up = skin.getDrawable("play-up");
-        buttonStyle.down = skin.getDrawable("play-down");
-        TWO_PLAY_BUTTON = new TextButton("2P Local", buttonStyle);
+        b2.up = skin.getDrawable("2plocal-up");
+        b2.down = skin.getDrawable("2plocal-down");
+        TWO_PLAY_BUTTON = new TextButton("", b2);
         TWO_PLAY_BUTTON.setPosition(ONE_PLAY_BUTTON.getX(),
                 ONE_PLAY_BUTTON.getY() - ONE_PLAY_BUTTON.getHeight());
 
         //for the 2 net players game button
-        buttonStyle.up = skin.getDrawable("play-up");
-        buttonStyle.down = skin.getDrawable("play-down");
-        TWO_NET_BUTTON = new TextButton("2P Net", buttonStyle);
+        b3.up = skin.getDrawable("2pnet-up");
+        b3.down = skin.getDrawable("2pnet-down");
+        TWO_NET_BUTTON = new TextButton("", b3);
         TWO_NET_BUTTON.setPosition(TWO_PLAY_BUTTON.getX(),
                 TWO_PLAY_BUTTON.getY() - TWO_PLAY_BUTTON.getHeight());
 
         //for the Exit button
-        backButtonStyle.up = skin.getDrawable("back-up");
-        backButtonStyle.down = skin.getDrawable("back-down");
-        BACK_BUTTON = new TextButton("", backButtonStyle);
+        b4.up = skin.getDrawable("back-up");
+        b4.down = skin.getDrawable("back-down");
+        BACK_BUTTON = new TextButton("", b4);
         BACK_BUTTON.setPosition(Gdx.graphics.getWidth() - BACK_BUTTON.getWidth(),
                  0);
 
@@ -223,7 +230,7 @@ public class PlayMenuView extends ScreenAdapter {
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
 
         game.getBatch().begin();
-        //drawBackground();
+        drawBackground();
         game.getBatch().end();
 
         stage.draw();
@@ -233,9 +240,7 @@ public class PlayMenuView extends ScreenAdapter {
      * Draws the background
      */
     private void drawBackground() {
-        Texture background = game.getAssetManager().get("background.png", Texture.class);
-        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        game.getBatch().draw(background, 0, 0, 0, 0, (int)(ROOM_WIDTH / PIXEL_TO_METER), (int) (ROOM_HEIGHT / PIXEL_TO_METER));
+       MainMenuView.drawBackground();
     }
 
     public OrthographicCamera getCamera() {
