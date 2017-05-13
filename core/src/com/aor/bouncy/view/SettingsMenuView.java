@@ -143,6 +143,7 @@ public class SettingsMenuView extends ScreenAdapter{
         MUSIC_CHECK.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MainMenuView.playClick();
                 if (game.getBACKGROUND_MUSIC().isPlaying())
                     game.getBACKGROUND_MUSIC().pause();
                 else
@@ -153,6 +154,7 @@ public class SettingsMenuView extends ScreenAdapter{
         FX_CHECK.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MainMenuView.playClick();
                 game.setFX_ENABLED(!game.isFX_ENABLED());
             }
         });
@@ -160,6 +162,7 @@ public class SettingsMenuView extends ScreenAdapter{
         BACK_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MainMenuView.playClick();
                 game.setScreen(new MainMenuView(game, false));
             }
         });
@@ -167,8 +170,7 @@ public class SettingsMenuView extends ScreenAdapter{
         COLOR_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                RED += 20;
-                RED %= 255;
+                MainMenuView.playClick();
             }
         });
     }

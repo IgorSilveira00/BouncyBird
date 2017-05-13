@@ -81,6 +81,8 @@ public class MainMenuView extends ScreenAdapter {
 
     private TextButton EXIT_BUTTON;
 
+    private static Sound MOUSE_CLICK;
+
     /**
      * Creates this screen.
      * @param game The game this screen belongs to
@@ -95,6 +97,7 @@ public class MainMenuView extends ScreenAdapter {
         loadSounds();
 
         if (!game.getBACKGROUND_MUSIC().isPlaying())
+            game.getBACKGROUND_MUSIC().setVolume(game.getBACKGROUND_MUSIC().getVolume() / 2f);
             game.getBACKGROUND_MUSIC().play();
         }
 
@@ -107,6 +110,7 @@ public class MainMenuView extends ScreenAdapter {
         Music toPlay = game.getAssetManager().get("background-music.mp3");
         toPlay.setLooping(true);
         game.setBACKGROUND_MUSIC(toPlay);
+        MOUSE_CLICK = game.getAssetManager().get("click.mp3");
     }
 
     private void loadButtons() {
@@ -166,6 +170,7 @@ public class MainMenuView extends ScreenAdapter {
         PLAY_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                playClick();
                 game.setScreen(new PlayMenuView(game));
                 disableButtons();
             }
@@ -174,6 +179,7 @@ public class MainMenuView extends ScreenAdapter {
         SETTINGS_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                playClick();
                 game.setScreen(new SettingsMenuView(game));
             }
         });
@@ -181,6 +187,7 @@ public class MainMenuView extends ScreenAdapter {
         EXIT_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                playClick();
                 System.exit(0);
             }
         });
@@ -211,6 +218,14 @@ public class MainMenuView extends ScreenAdapter {
     }
 
     /**
+     * Plays the button click sound.
+     */
+    public static void playClick() {
+        if (game.isFX_ENABLED())
+             MOUSE_CLICK.play();
+    }
+
+    /**
      * Creates the camera used to show the viewport.
      * @return the camera
      */
@@ -238,6 +253,7 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "bt.JPG" , Texture.class);
         this.game.getAssetManager().load( "test.png" , Texture.class);
         this.game.getAssetManager().load("spike.png", Texture.class);
+        this.game.getAssetManager().load("spike-red.png", Texture.class);
         this.game.getAssetManager().load("floor.png", Texture.class);
         this.game.getAssetManager().load("background-music.mp3", Music.class);
         this.game.getAssetManager().load( "empty-check.png" , Texture.class);
@@ -259,6 +275,8 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "2pnet-up.png" , Texture.class);
         this.game.getAssetManager().load( "2pnet-down.png" , Texture.class);
         this.game.getAssetManager().load( "backplate.png" , Texture.class);
+        this.game.getAssetManager().load( "click.mp3" , Sound.class);
+        this.game.getAssetManager().load( "jump.wav" , Sound.class);
 
         this.game.getAssetManager().finishLoading();
     }

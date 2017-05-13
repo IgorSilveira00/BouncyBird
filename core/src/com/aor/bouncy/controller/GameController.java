@@ -95,9 +95,13 @@ public class GameController implements ContactListener{
 
     private boolean readyToRemove = false;
 
-    private boolean FX_ENABLED;
-
     private boolean END = false;
+
+    private final float UPWARD_SPEED = 0.6f;
+    private final float GRAVITY = -0.03f;
+    private float speedBirdOne = 0, speedBirdTwo = 0;
+    private boolean isJump = false;
+    private int birdToJumpIndex = 0;
 
     /**
      * Time between bonus spawns.
@@ -112,7 +116,7 @@ public class GameController implements ContactListener{
     /**
      * Creates a new GameController that controls the physics of a certain GameModel.
      */
-    private GameController(boolean FX_ENABLED) {
+    private GameController() {
         world = new World(new Vector2(0, 0), true);
 
         birdBodies.add(new BirdBody(world, GameModel.getInstance().getBird().get(0)));
@@ -135,8 +139,6 @@ public class GameController implements ContactListener{
             new EdgeBody(world, edge);
 
         world.setContactListener(this);
-        world.setGravity(new Vector2(0, -30f));
-        this.FX_ENABLED = FX_ENABLED;
 
         GAME_SCORE = 0;
         //getReady();
@@ -164,11 +166,9 @@ public class GameController implements ContactListener{
      * Returns a singleton instance of a game controller.
      * @return the singleton instance.
      */
-    public static GameController getInstance(boolean FX_ENABLED) {
+    public static GameController getInstance() {
         if (instance == null)
-            instance = new GameController(FX_ENABLED);
-        else
-            instance.FX_ENABLED = FX_ENABLED;
+            instance = new GameController();
         return instance;
     }
 
@@ -195,10 +195,12 @@ public class GameController implements ContactListener{
         world.getBodies(bodies);
 
         for (Body body: bodies) {
-            //verifyBounds(body);
+            if (body.getUserData() instanceof BirdModel)
+                verifyBounds(body);
             ((EntityModel) body.getUserData()).setPosition(body.getPosition().x, body.getPosition().y);
         }
 
+        processJump();
         birdBodies.get(0).setTransform(birdBodies.get(0).getX() + BIRD_X_SPEED, birdBodies.get(0).getY(), 0);
 
         if (birdBodies.size() > 1)
@@ -317,10 +319,36 @@ public class GameController implements ContactListener{
      * Makes the bird jump.
      */
     public void jump(int index) {
-        //TODO
-        birdBodies.get(index).applyForceToCenter(0, 3000f, true);
+        isJump = true;
+        birdToJumpIndex = index;
     }
 
+    /**
+     * Checks to see if the jump flag was activated and makes the bird jump.
+     */
+    private void processJump() {
+        if(isJump)
+        {
+            //GameView.playJump();        //play the sound effect
+
+            if (birdToJumpIndex == 0)
+                speedBirdOne = UPWARD_SPEED;
+            else
+                speedBirdTwo = UPWARD_SPEED; //negative relative to the normal gravity
+            isJump = false; //once a jump is activated, we disable the flag
+        }
+        speedBirdOne += (GRAVITY); //physics ya, the speed is affected by gravity
+        speedBirdTwo += (GRAVITY); //physics ya, the speed is affected by gravity
+
+        birdBodies.get(0).setTransform(birdBodies.get(0).getX(),
+                birdBodies.get(0).getY() + speedBirdOne,
+                0);
+
+        if (GameView.isTWO_PLAYERS())
+            birdBodies.get(1).setTransform(birdBodies.get(1).getX(),
+                    birdBodies.get(1).getY() + speedBirdTwo,
+                    0);
+    }
     /**
      * Spawns a new bonus in the room.
      */
@@ -382,7 +410,8 @@ public class GameController implements ContactListener{
 
     //TODO game over
     private void birdSpikeCollision(Body bodyA) {
-        END = false;
+        ((SpikeModel) bodyA.getUserData()).setNormalTexture(false);
+        END = true;
     }
 
     /**
@@ -403,8 +432,7 @@ public class GameController implements ContactListener{
             BIRD_X_SPEED *= -1;
             GAME_SCORE += 1;
             hasTurned = true;
-            if (FX_ENABLED)
-                GameView.playHit();
+            GameView.playHit();
             DIFFICULTY_COUNTER++;
         }
         readyToRemove = true;

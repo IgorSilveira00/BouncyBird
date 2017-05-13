@@ -147,6 +147,7 @@ public class PlayMenuView extends ScreenAdapter {
         ONE_PLAY_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MainMenuView.playClick();
                 game.setScreen(new GameView(game, false));
                 disableButtons();
             }
@@ -155,6 +156,7 @@ public class PlayMenuView extends ScreenAdapter {
         TWO_PLAY_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MainMenuView.playClick();
                 game.setScreen(new GameView(game, true));
                 disableButtons();
             }
@@ -163,12 +165,14 @@ public class PlayMenuView extends ScreenAdapter {
         TWO_NET_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MainMenuView.playClick();
             }
         });
 
         BACK_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MainMenuView.playClick();
                 game.setScreen(new MainMenuView(game, false));
             }
         });

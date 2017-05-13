@@ -2,6 +2,7 @@ package com.aor.bouncy.view.entities;
 
 import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.model.entities.EntityModel;
+import com.aor.bouncy.model.entities.SpikeModel;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,10 +12,17 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * A view representing the spike.
  */
 public class SpikeView extends EntityView {
+    private boolean normalSpike;
+
     /**
      * The texture used for the spikes.
      */
     private TextureRegion texture;
+
+    /**
+     * The texture used for the spike that killed the bird.
+     */
+    private TextureRegion textureRed;
 
     /**
      * Constructs a spike model.
@@ -34,8 +42,21 @@ public class SpikeView extends EntityView {
     @Override
     public Sprite createSprite(MyBouncyBird game) {
         texture = createTexture(game);
+        textureRed = createTextureRed(game);
 
         return new Sprite(texture);
+    }
+
+    /**
+     * Creates the texture used for the red spike.
+     *
+     * @param game the game this view belongs to. Needed to access the
+     *             asset manager to get textures.
+     * @return the texture used.
+     */
+    private TextureRegion createTextureRed(MyBouncyBird game) {
+        Texture texture = game.getAssetManager().get("spike-red.png");
+        return new TextureRegion(texture, texture.getWidth(), texture.getHeight());
     }
 
     /**
@@ -58,6 +79,8 @@ public class SpikeView extends EntityView {
     @Override
     public void update(EntityModel model) {
         super.update(model);
+
+        normalSpike = ((SpikeModel)model).isNormalTexture();
     }
 
     /**
@@ -67,7 +90,10 @@ public class SpikeView extends EntityView {
      */
     @Override
     public void draw(SpriteBatch batch) {
-        sprite.setRegion(texture);
+        if (normalSpike)
+            sprite.setRegion(texture);
+        else
+            sprite.setRegion(textureRed);
         sprite.draw(batch);
     }
 }

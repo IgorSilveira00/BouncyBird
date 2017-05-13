@@ -6,6 +6,24 @@ package com.aor.bouncy.model.entities;
 public class SpikeModel extends EntityModel{
     private ModelType modelType;
 
+    private boolean normalTexture = true;
+
+    /**
+     * Set the normal texture flag for this spike
+     * @param normalTexture the texture flag.
+     */
+    public void setNormalTexture(boolean normalTexture) {
+        this.normalTexture = normalTexture;
+    }
+
+    /**
+     * Gets the texture flag of this spike.
+     * @return the texture flag
+     */
+    public boolean isNormalTexture() {
+        return normalTexture;
+    }
+
     /**
      * Constructs a spike model belonging to a game's model.
      * @param x The x-coordinate of this spike in meters.

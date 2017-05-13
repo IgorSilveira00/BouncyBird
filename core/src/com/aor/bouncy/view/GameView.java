@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -53,7 +54,7 @@ public class GameView extends ScreenAdapter {
     /**
      * The game this screen belongs to.
      */
-    private final MyBouncyBird game;
+    private static MyBouncyBird game;
 
     /**
      * The camera used to show the viewport.
@@ -75,7 +76,9 @@ public class GameView extends ScreenAdapter {
 
     private static boolean TWO_PLAYERS;
 
-    private static Sound EDGE_HIT;
+    private static Sound EDGE_HIT_EFFECT;
+
+    private static Sound JUMP_EFFECT;
 
     private boolean END = false;
 
@@ -91,7 +94,13 @@ public class GameView extends ScreenAdapter {
         //menuView.setCameras(debugRenderer, debugCamera);
 
         createLabels();
-        EDGE_HIT = game.getAssetManager().get("edge-hit.wav");
+
+        getSoundEffects();
+    }
+
+    private void getSoundEffects() {
+        EDGE_HIT_EFFECT = game.getAssetManager().get("edge-hit.wav");
+        JUMP_EFFECT = game.getAssetManager().get("jump.wav");
     }
 
     /**
@@ -121,7 +130,13 @@ public class GameView extends ScreenAdapter {
     }
 
     public static void playHit() {
-        EDGE_HIT.play();
+        if (game.isFX_ENABLED())
+            EDGE_HIT_EFFECT.play();
+    }
+
+    public static void playJump() {
+        if (game.isFX_ENABLED())
+            JUMP_EFFECT.play();
     }
 
     /**
@@ -152,11 +167,11 @@ public class GameView extends ScreenAdapter {
      */
     @Override
     public void render(float delta) {
-        GameController.getInstance(game.isFX_ENABLED()).removeFlagged();
+        GameController.getInstance().removeFlagged();
 
         handleInputs(delta);
 
-        END = GameController.getInstance(game.isFX_ENABLED()).update(delta);
+        END = GameController.getInstance().update(delta);
 
         game.getBatch().setProjectionMatrix(camera.combined);
 
@@ -170,13 +185,16 @@ public class GameView extends ScreenAdapter {
         drawEntities();
         game.getBatch().end();
 
-        if (END)
-            game.setScreen(new MainMenuView(game, false));
+        if (END) {
+            camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 100/camera.viewportWidth);
+
+            //game.setScreen(new MainMenuView(game, false));
+        }
 
         if (DEBUG_PHYSICS) {
             debugCamera = camera.combined.cpy();
             debugCamera.scl(1 / PIXEL_TO_METER);
-            debugRenderer.render(GameController.getInstance(game.isFX_ENABLED()).getWorld(), debugCamera);
+            debugRenderer.render(GameController.getInstance().getWorld(), debugCamera);
         }
     }
 
@@ -190,13 +208,16 @@ public class GameView extends ScreenAdapter {
      * @param delta time since last time inputs where handled in seconds
      */
     private void handleInputs(float delta) {
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            GameController.getInstance(game.isFX_ENABLED()).jump(0);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            playJump();
+            GameController.getInstance().jump(0);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-            GameController.getInstance(game.isFX_ENABLED()).jump(1);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            playJump();
+            GameController.getInstance().jump(1);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            MainMenuView.playClick();
             game.setScreen(new MainMenuView(game, false));
         }
     }
