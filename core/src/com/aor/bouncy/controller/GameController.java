@@ -1,21 +1,16 @@
 package com.aor.bouncy.controller;
 
-import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.Utilities;
 import com.aor.bouncy.controller.entities.*;
 import com.aor.bouncy.model.GameModel;
 import com.aor.bouncy.model.entities.*;
 import com.aor.bouncy.view.GameView;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Controls the physics aspect of the game.
@@ -27,9 +22,13 @@ public class GameController implements ContactListener{
     private static GameController instance;
 
     /**
-     * Game score.
+     * Game score for the first bird.
      */
-    private static int GAME_SCORE = 0;
+    private static int GAME_SCORE_ONE = 0;/**
+
+     * Game score for the second bird.
+     */
+    private static int GAME_SCORE_TWO = 0;
 
     /**
      * The arena width in meters.
@@ -89,7 +88,7 @@ public class GameController implements ContactListener{
     /**
      * Corrects gaps between spikes and edges.
      */
-    public static final float corrector = 0.9f;
+    public static final float corrector = 1f;
 
     private int DIFFICULTY_COUNTER = 0;
 
@@ -140,26 +139,9 @@ public class GameController implements ContactListener{
 
         world.setContactListener(this);
 
-        GAME_SCORE = 0;
-        //getReady();
-    }
-
-    public void getReady() {
-        boolean oneReady = false;
-        boolean twoReady = false;
-
-        if (!GameView.isTWO_PLAYERS()) twoReady = true;
-
-        //TODO draw press readies
-
-        while (!oneReady || !twoReady) {
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                oneReady = true;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-                twoReady = true;
-            }
-        }
+        BIRD_X_SPEED = 0.3f;
+        GAME_SCORE_ONE = 0;
+        GAME_SCORE_TWO = 0;
     }
 
     /**
@@ -181,6 +163,7 @@ public class GameController implements ContactListener{
 
         GameModel.getInstance().update(delta);
 
+        //TODO
         if (!SPIKES_OUT)
             growSpikes(processAmount());
 
@@ -241,7 +224,7 @@ public class GameController implements ContactListener{
         bodiesToRemove.clear();
         getCorrectSpikeBodies();
 
-        int[] spikesIndexes = Utilities.getDistinctRandomNumbers(processAmount(), GameModel.AMOUNT_SPIKES);
+        int[] spikesIndexes = Utilities.getDistinctRandomNumbers(amount, GameModel.AMOUNT_SPIKES - 2);
 
         if (GameView.isTWO_PLAYERS()) {
             for (Integer index: spikesIndexes) {
@@ -329,8 +312,6 @@ public class GameController implements ContactListener{
     private void processJump() {
         if(isJump)
         {
-            //GameView.playJump();        //play the sound effect
-
             if (birdToJumpIndex == 0)
                 speedBirdOne = UPWARD_SPEED;
             else
@@ -366,8 +347,16 @@ public class GameController implements ContactListener{
      * Returns the current game score.
      * @return the game score.
      */
-    public static int getGameScore() {
-        return GAME_SCORE;
+    public static int getGameScoreOne() {
+        return GAME_SCORE_ONE;
+    }
+
+    /**
+     * Returns the current game score.
+     * @return the game score.
+     */
+    public static int getGameScoreTwo() {
+        return GAME_SCORE_TWO;
     }
 
     /**
@@ -421,7 +410,7 @@ public class GameController implements ContactListener{
      */
     private void bonusCollision(Body body) {
         ((BonusModel) body.getUserData()).setFlaggedForRemoval(true);
-        GAME_SCORE += 1;
+        GAME_SCORE_ONE += 1;
     }
 
     /**
@@ -430,7 +419,7 @@ public class GameController implements ContactListener{
     private void birdEdgeCollision() {
         if (!hasTurned) {
             BIRD_X_SPEED *= -1;
-            GAME_SCORE += 1;
+            GAME_SCORE_ONE += 1;
             hasTurned = true;
             GameView.playHit();
             DIFFICULTY_COUNTER++;
@@ -464,5 +453,9 @@ public class GameController implements ContactListener{
                 world.destroyBody(body);
             }
         }
+    }
+
+    public static void dispose() {
+        instance = null;
     }
 }

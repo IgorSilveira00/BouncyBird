@@ -2,6 +2,8 @@ package com.aor.bouncy.view;
 
 import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.Utilities;
+import com.aor.bouncy.controller.GameController;
+import com.aor.bouncy.model.GameModel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -82,6 +84,7 @@ public class MainMenuView extends ScreenAdapter {
     private TextButton EXIT_BUTTON;
 
     private static Sound MOUSE_CLICK;
+    private boolean firstTime = true;
 
     /**
      * Creates this screen.
@@ -104,6 +107,15 @@ public class MainMenuView extends ScreenAdapter {
         camera = createCamera();
         loadButtons();
         enableButtons();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+
+        if (!firstTime)
+            game.setScreen(new MainMenuView(game, false));
+        firstTime = false;
     }
 
     private void loadSounds() {

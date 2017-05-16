@@ -1,6 +1,8 @@
 package com.aor.bouncy.view;
 
 import com.aor.bouncy.MyBouncyBird;
+import com.aor.bouncy.controller.GameController;
+import com.aor.bouncy.model.GameModel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -61,6 +63,7 @@ public class PlayMenuView extends ScreenAdapter {
     private TextButton TWO_NET_BUTTON;
 
     private TextButton BACK_BUTTON;
+    private boolean firstTime = true;
 
     /**
      * Creates this screen.
@@ -140,6 +143,15 @@ public class PlayMenuView extends ScreenAdapter {
         stage.addActor(BACK_BUTTON);
     }
 
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+
+        if (!firstTime)
+            game.setScreen(new PlayMenuView(game));
+        firstTime = false;
+    }
+
     /**
      * Adds the listeners to the MainMenuView's buttons.
      */
@@ -148,7 +160,12 @@ public class PlayMenuView extends ScreenAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
+
+                GameController.dispose();
+                GameModel.dispose();
+
                 game.setScreen(new GameView(game, false));
+
                 disableButtons();
             }
         });
@@ -157,6 +174,10 @@ public class PlayMenuView extends ScreenAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
+
+                GameController.dispose();
+                GameModel.dispose();
+
                 game.setScreen(new GameView(game, true));
                 disableButtons();
             }

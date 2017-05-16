@@ -20,12 +20,12 @@ public class GameModel {
     /**
      * Total number of spikes in the game.
      */
-    public static final int AMOUNT_SPIKES = 10;
+    public static final int AMOUNT_SPIKES = 12;
 
     /**
      * The spikes height. The amount that pops visible.
      */
-    public static final float SPIKE_HEIGHT = 4.5f;
+    public static final float SPIKE_HEIGHT = 4f;
 
     /**
      * The bird controlled by the user in this game.
@@ -83,13 +83,13 @@ public class GameModel {
         left_wall_spikes = new ArrayList<SpikeModel>();
         edges = new ArrayList<EdgeModel>();
 
-       bird.add(new BirdModel(GameController.ROOM_WIDTH / 2,
-                GameController.ROOM_HEIGHT / 2,
+       bird.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
+                GameView.VIEWPORT_HEIGHT / 2,
                 0));
 
         if (GameView.isTWO_PLAYERS())
-            bird.add(new BirdModel(GameController.ROOM_WIDTH / 2,
-                    GameController.ROOM_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER,
+            bird.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
+                    GameView.VIEWPORT_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER,
                     0));
 
         for (int i = 0; i < AMOUNT_SPIKES; i++){
@@ -99,32 +99,34 @@ public class GameModel {
                     EntityModel.ModelType.SPIKE));
 
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
-                    GameController.ROOM_HEIGHT - SPIKE_HEIGHT + GameController.corrector,
+                    GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT + GameController.corrector,
                     - (float) Math.PI / 2,
                     EntityModel.ModelType.SPIKE));
+        }
 
-            right_wall_spikes.add(new SpikeModel(GameController.ROOM_WIDTH,
+        for (int i = 0; i < AMOUNT_SPIKES - 2 ; i++) {
+            right_wall_spikes.add(new SpikeModel(GameView.VIEWPORT_WIDTH + 1,
                     SPIKE_HEIGHT + SPIKE_HEIGHT * i,
                     (float) Math.PI,
                     EntityModel.ModelType.RIGHT_SPIKE));
 
-            left_wall_spikes.add(new SpikeModel(0,
+            left_wall_spikes.add(new SpikeModel(-1,
                     SPIKE_HEIGHT + SPIKE_HEIGHT * i,
                     0,
                     EntityModel.ModelType.LEFT_SPIKE));
         }
 
         // bottom edge
-        edges.add(new EdgeModel(0, 1, 0));
+        edges.add(new EdgeModel(0, 0, 0));
 
         //top edge
-        edges.add(new EdgeModel(0, GameController.ROOM_HEIGHT - 1, 0));
+        edges.add(new EdgeModel(0, GameView.VIEWPORT_HEIGHT, 0));
 
         // left edge
-        edges.add(new EdgeModel(1f, 0, (float) Math.PI / 2));
+        edges.add(new EdgeModel(0, 0, (float) Math.PI / 2));
 
         //right edge
-        edges.add(new EdgeModel(GameController.ROOM_WIDTH - 1f, GameController.ROOM_HEIGHT - 1 , (float) Math.PI / 2 ));
+        edges.add(new EdgeModel(GameView.VIEWPORT_WIDTH, GameView.VIEWPORT_HEIGHT , (float) Math.PI / 2 ));
     }
 
     /**
@@ -202,7 +204,7 @@ public class GameModel {
                 bonus.setFlaggedForRemoval(true);
     }
 
-    public void reset() {
-        instance = new GameModel();
+    public static void dispose() {
+        instance = null;
     }
 }

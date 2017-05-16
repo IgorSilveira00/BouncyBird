@@ -1,6 +1,7 @@
 package com.aor.bouncy.model.entities;
 
 import com.aor.bouncy.controller.GameController;
+import com.aor.bouncy.view.GameView;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 
@@ -16,8 +17,8 @@ public class BonusModel extends EntityModel{
      * @param y The y-coordinate of this bonus in meters.
      */
     public BonusModel(float SPIKE_HEIGHT) {
-        super(random(SPIKE_HEIGHT, GameController.ROOM_WIDTH - SPIKE_HEIGHT),
-                random(SPIKE_HEIGHT, GameController.ROOM_HEIGHT - SPIKE_HEIGHT),
+        super(random(SPIKE_HEIGHT, GameView.VIEWPORT_WIDTH - SPIKE_HEIGHT),
+                random(SPIKE_HEIGHT, GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT),
                 0);
     }
 

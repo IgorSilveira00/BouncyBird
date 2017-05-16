@@ -35,10 +35,16 @@ import static com.aor.bouncy.controller.GameController.*;
 public class GameView extends ScreenAdapter {
     //test
     static int t1 = 60, t2 = 30, t3 = 50;
+
+    /**
+     * Boolean that decides if players are ready and controller has to work physics.
+     */
+    private boolean READY = false;
+
     /**
      * Used to debug the position of the physics fixtures
      */
-    private static final boolean DEBUG_PHYSICS = false;
+    private static final boolean DEBUG_PHYSICS = true;
 
     /**
      * How much meters does a pixel represent
@@ -49,7 +55,8 @@ public class GameView extends ScreenAdapter {
      * The width of the viewport in meters. The height is
      * automatically calculated using the screen ratio.
      */
-    private static final float VIEWPORT_WIDTH = 60;
+    public static final float VIEWPORT_WIDTH = 60;
+    public static float VIEWPORT_HEIGHT;
 
     /**
      * The game this screen belongs to.
@@ -108,9 +115,9 @@ public class GameView extends ScreenAdapter {
      * @return the score Label.
      */
     private void createLabels() {
-        Label scoreLabel = new Label(Integer.toString(GameController.getGameScore()), new Label.LabelStyle(new BitmapFont(), null));
-        scoreLabel.setPosition(Gdx.graphics.getWidth() + (TWO_PLAYERS ? Gdx.graphics.getWidth() / 2f: 0),
-                Gdx.graphics.getHeight());
+        Label scoreLabel = new Label(Integer.toString(GameController.getGameScoreOne()), new Label.LabelStyle(new BitmapFont(), null));
+        scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER  / 2f + (TWO_PLAYERS ? VIEWPORT_WIDTH / PIXEL_TO_METER / 4: 0),
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
         scoreLabel.setFontScale(20);
 
         scoreLabel.setColor(TWO_PLAYERS ? Color.BLUE: Color.WHITE);
@@ -118,9 +125,9 @@ public class GameView extends ScreenAdapter {
         scoreLabels.add(scoreLabel);
 
         if (TWO_PLAYERS) {
-            scoreLabel = new Label(Integer.toString(GameController.getGameScore()), new Label.LabelStyle(new BitmapFont(), null));
-            scoreLabel.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getWidth() / 2f,
-                    Gdx.graphics.getHeight());
+            scoreLabel = new Label(Integer.toString(GameController.getGameScoreTwo()), new Label.LabelStyle(new BitmapFont(), null));
+            scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 4,
+                    VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
             scoreLabel.setFontScale(20);
 
             scoreLabel.setColor(Color.RED);
@@ -144,8 +151,9 @@ public class GameView extends ScreenAdapter {
      * @return the camera
      */
     private OrthographicCamera createCamera() {
+        VIEWPORT_HEIGHT = VIEWPORT_WIDTH * Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
         OrthographicCamera camera = new OrthographicCamera(VIEWPORT_WIDTH / PIXEL_TO_METER,
-                VIEWPORT_WIDTH / PIXEL_TO_METER * ((float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth()) -12);
+                VIEWPORT_HEIGHT / PIXEL_TO_METER);
 
         camera.position.set(camera.viewportWidth / 2f,
                 camera.viewportHeight / 2f,
@@ -171,7 +179,8 @@ public class GameView extends ScreenAdapter {
 
         handleInputs(delta);
 
-        END = GameController.getInstance().update(delta);
+        if (READY)
+            END = GameController.getInstance().update(delta);
 
         game.getBatch().setProjectionMatrix(camera.combined);
 
@@ -188,7 +197,7 @@ public class GameView extends ScreenAdapter {
         if (END) {
             camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 100/camera.viewportWidth);
 
-            //game.setScreen(new MainMenuView(game, false));
+            game.setScreen(new MainMenuView(game, false));
         }
 
         if (DEBUG_PHYSICS) {
@@ -209,10 +218,13 @@ public class GameView extends ScreenAdapter {
      */
     private void handleInputs(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            playJump();
-            GameController.getInstance().jump(0);
+            if (READY) {
+                playJump();
+                GameController.getInstance().jump(0);
+            }
+            READY = true;
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
             playJump();
             GameController.getInstance().jump(1);
         }
@@ -233,10 +245,15 @@ public class GameView extends ScreenAdapter {
         List<EdgeModel> edges = GameModel.getInstance().getEdges();
 
         //TODO pontos separados para os dois
-        for (int i = 0; i < scoreLabels.size(); i++) {
-        scoreLabels.get(i).setText(Integer.toString(GameController.getGameScore()));
-        scoreLabels.get(i).draw(game.getBatch(), 1);
+
+        scoreLabels.get(0).setText(Integer.toString(GameController.getGameScoreOne()));
+        scoreLabels.get(0).draw(game.getBatch(), 1);
+
+        if (isTWO_PLAYERS()) {
+            scoreLabels.get(1).setText(Integer.toString(GameController.getGameScoreOne()));
+            scoreLabels.get(1).draw(game.getBatch(), 1);
         }
+
 
         for (int i = 0; i < floor_ceiling_spikes.size(); i++) {
             EntityView view = ViewFactory.makeView(game, floor_ceiling_spikes.get(i));

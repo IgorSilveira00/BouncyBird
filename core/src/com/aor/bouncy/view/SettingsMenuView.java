@@ -56,6 +56,7 @@ public class SettingsMenuView extends ScreenAdapter{
     private TextButton BACK_BUTTON;
 
     private Slider VOLUME_SLIDER;
+    private boolean firstTime = true;
 
     /**
      * Creates this screen.
@@ -185,6 +186,15 @@ public class SettingsMenuView extends ScreenAdapter{
         Texture toLoad = game.getAssetManager().get(assetName);
         TextureRegion textureRegion = new TextureRegion(toLoad, toLoad.getWidth(), toLoad.getHeight());
         textureAtlas.addRegion(regionName, textureRegion);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+
+        if (!firstTime)
+            game.setScreen(new SettingsMenuView(game));
+        firstTime = false;
     }
 
     /**
