@@ -22,9 +22,9 @@ public class BirdBody extends EntityBody{
         int width = 100, height = 100;
 
         // Upper triangle
-        createFixture(body, new float[]{0,15, 15,1, 85,1, 100,15, 0,85}, width, height, density, friction, restitution, BIRD_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
+        createFixture(body, new float[]{12,50, 21,28, 42,15, 60,16, 79,28, 88,50}, width, height, density, friction, restitution, BIRD_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
 
         // Bottom triangle
-        createFixture(body, new float[]{0,85, 100,15, 100,85, 85,99, 15,99}, width, height, density, friction, restitution, BIRD_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
+        createFixture(body, new float[]{88,50, 79,75, 58,87, 39,86, 19,73, 12,50 }, width, height, density, friction, restitution, BIRD_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
     }
 }

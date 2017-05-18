@@ -262,8 +262,7 @@ public class MainMenuView extends ScreenAdapter {
      * Loads the assets needed by this screen.
      */
     private void loadAssets() {
-        this.game.getAssetManager().load( "bt.JPG" , Texture.class);
-        this.game.getAssetManager().load( "test.png" , Texture.class);
+        this.game.getAssetManager().load( "bird.png" , Texture.class);
         this.game.getAssetManager().load("spike.png", Texture.class);
         this.game.getAssetManager().load("spike-red.png", Texture.class);
         this.game.getAssetManager().load("floor.png", Texture.class);

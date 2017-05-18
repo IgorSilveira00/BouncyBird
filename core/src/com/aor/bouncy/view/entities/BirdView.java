@@ -59,7 +59,7 @@ public class BirdView extends EntityView {
     @Override
     public Sprite createSprite(MyBouncyBird game) {
         flyingAnimation = createFlyingAnimation(game);
-        nonFlyingAnimation = createNonFlyingAnumation(game);
+        nonFlyingAnimation = createNonFlyingAnimation(game);
 
         return new Sprite(nonFlyingAnimation);
     }
@@ -71,8 +71,8 @@ public class BirdView extends EntityView {
      *             asset manager to get textures.
      * @return the texture used when the bird is not flying
      */
-    private TextureRegion createNonFlyingAnumation(MyBouncyBird game) {
-        Texture notFlyingTexture = game.getAssetManager().get("test.png");
+    private TextureRegion createNonFlyingAnimation(MyBouncyBird game) {
+        Texture notFlyingTexture = game.getAssetManager().get("bird.png");
         return new TextureRegion(notFlyingTexture, notFlyingTexture.getWidth(), notFlyingTexture.getHeight());
     }
 
@@ -84,7 +84,7 @@ public class BirdView extends EntityView {
      * @return the animation used when the bird is flying
      */
     private Animation<TextureRegion> createFlyingAnimation(MyBouncyBird game) {
-        Texture thrustTexture = game.getAssetManager().get("test.png");
+        Texture thrustTexture = game.getAssetManager().get("bird.png");
         TextureRegion[][] thrustRegion = TextureRegion.split(thrustTexture, thrustTexture.getWidth() / 1, thrustTexture.getHeight());
 
         TextureRegion[] frames = new TextureRegion[1];
