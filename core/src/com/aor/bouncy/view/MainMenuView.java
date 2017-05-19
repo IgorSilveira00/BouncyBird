@@ -263,6 +263,9 @@ public class MainMenuView extends ScreenAdapter {
      */
     private void loadAssets() {
         this.game.getAssetManager().load( "bird.png" , Texture.class);
+        this.game.getAssetManager().load( "bird2.png" , Texture.class);
+        this.game.getAssetManager().load( "bird_fly.png" , Texture.class);
+        this.game.getAssetManager().load( "bird2_fly.png" , Texture.class);
         this.game.getAssetManager().load("spike.png", Texture.class);
         this.game.getAssetManager().load("spike-red.png", Texture.class);
         this.game.getAssetManager().load("floor.png", Texture.class);
@@ -279,6 +282,9 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "settings-down.png" , Texture.class);
         this.game.getAssetManager().load( "exit-up.png" , Texture.class);
         this.game.getAssetManager().load( "exit-down.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts1.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts2.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts3.png" , Texture.class);
         this.game.getAssetManager().load( "1plocal-up.png" , Texture.class);
         this.game.getAssetManager().load( "1plocal-down.png" , Texture.class);
         this.game.getAssetManager().load( "2plocal-up.png" , Texture.class);

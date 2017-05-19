@@ -3,10 +3,7 @@ package com.aor.bouncy.view;
 import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.GameModel;
-import com.aor.bouncy.model.entities.BirdModel;
-import com.aor.bouncy.model.entities.BonusModel;
-import com.aor.bouncy.model.entities.EdgeModel;
-import com.aor.bouncy.model.entities.SpikeModel;
+import com.aor.bouncy.model.entities.*;
 import com.aor.bouncy.view.entities.EntityView;
 import com.aor.bouncy.view.entities.ViewFactory;
 import com.badlogic.gdx.Gdx;
@@ -21,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import java.util.ArrayList;
@@ -100,7 +98,8 @@ public class GameView extends ScreenAdapter {
         camera = createCamera();
         //menuView.setCameras(debugRenderer, debugCamera);
 
-        createLabels();
+        if (!TWO_PLAYERS)
+            createLabels();
 
         getSoundEffects();
     }
@@ -115,25 +114,15 @@ public class GameView extends ScreenAdapter {
      * @return the score Label.
      */
     private void createLabels() {
-        Label scoreLabel = new Label(Integer.toString(GameController.getGameScoreOne()), new Label.LabelStyle(new BitmapFont(), null));
-        scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER  / 2f + (TWO_PLAYERS ? VIEWPORT_WIDTH / PIXEL_TO_METER / 4: 0),
+        Label scoreLabel = new Label(Integer.toString(GameModel.getInstance().getGAME_SCORE()),
+                new Label.LabelStyle(new BitmapFont(), null));
+        scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER  / 2f,
                 VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
         scoreLabel.setFontScale(20);
 
-        scoreLabel.setColor(TWO_PLAYERS ? Color.BLUE: Color.WHITE);
+        scoreLabel.setColor(Color.WHITE);
 
         scoreLabels.add(scoreLabel);
-
-        if (TWO_PLAYERS) {
-            scoreLabel = new Label(Integer.toString(GameController.getGameScoreTwo()), new Label.LabelStyle(new BitmapFont(), null));
-            scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 4,
-                    VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
-            scoreLabel.setFontScale(20);
-
-            scoreLabel.setColor(Color.RED);
-
-            scoreLabels.add(scoreLabel);
-        }
     }
 
     public static void playHit() {
@@ -175,12 +164,13 @@ public class GameView extends ScreenAdapter {
      */
     @Override
     public void render(float delta) {
-        GameController.getInstance().removeFlagged();
 
         handleInputs(delta);
 
-        if (READY)
+        if (READY) {
             END = GameController.getInstance().update(delta);
+            GameController.getInstance().removeFlagged();
+        }
 
         game.getBatch().setProjectionMatrix(camera.combined);
 
@@ -191,6 +181,10 @@ public class GameView extends ScreenAdapter {
 
         game.getBatch().begin();
         drawBackground();
+
+        if (TWO_PLAYERS)
+            drawLifes();
+
         drawEntities();
         game.getBatch().end();
 
@@ -246,14 +240,10 @@ public class GameView extends ScreenAdapter {
 
         //TODO pontos separados para os dois
 
-        scoreLabels.get(0).setText(Integer.toString(GameController.getGameScoreOne()));
+        if (!TWO_PLAYERS) {
+        scoreLabels.get(0).setText(Integer.toString(GameModel.getInstance().getGAME_SCORE()));
         scoreLabels.get(0).draw(game.getBatch(), 1);
-
-        if (isTWO_PLAYERS()) {
-            scoreLabels.get(1).setText(Integer.toString(GameController.getGameScoreOne()));
-            scoreLabels.get(1).draw(game.getBatch(), 1);
         }
-
 
         for (int i = 0; i < floor_ceiling_spikes.size(); i++) {
             EntityView view = ViewFactory.makeView(game, floor_ceiling_spikes.get(i));
@@ -294,7 +284,35 @@ public class GameView extends ScreenAdapter {
             EntityView view2 = ViewFactory.makeView(game, bird2);
             view2.update(bird2);
             view2.draw(game.getBatch());
+
+
+           /* List<LifeModel> lifes = GameModel.getInstance().getLifes();
+
+            EntityView lifeView1 = ViewFactory.makeView(game, lifes.get(0));
+            lifeView1.update(lifes.get(0));
+            lifeView1.draw(game.getBatch());
+
+            EntityView lifeView2 = ViewFactory.makeView(game, lifes.get(1));
+            lifeView2.update(lifes.get(1));
+            lifeView2.draw(game.getBatch());*/
         }
+    }
+
+    private void drawLifes() {
+        Texture t1 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(0).getNUMBER_LIFES() + ".png", Texture.class);
+        Image i1 = new Image(t1);
+        i1.scaleBy(2);
+        i1.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 8f,
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f - VIEWPORT_HEIGHT / PIXEL_TO_METER / 6f);
+
+        Texture t2 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(1).getNUMBER_LIFES() + ".png", Texture.class);
+        Image i2 = new Image(t2);
+        i2.scaleBy(2);
+        i2.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 2f + VIEWPORT_WIDTH / PIXEL_TO_METER / 6f,
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f - VIEWPORT_HEIGHT / PIXEL_TO_METER / 6f);
+
+        i1.draw(game.getBatch(), 0.8f);
+        i2.draw(game.getBatch(), 0.8f);
     }
 
     /**

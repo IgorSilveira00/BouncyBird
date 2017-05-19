@@ -1,6 +1,7 @@
 package com.aor.bouncy.view.entities;
 
 import com.aor.bouncy.MyBouncyBird;
+import com.aor.bouncy.model.entities.BirdModel;
 import com.aor.bouncy.model.entities.EntityModel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -24,14 +25,25 @@ public class BirdView extends EntityView {
     private Animation<TextureRegion> flyingAnimation;
 
     /**
+     * The animation used for the bird two flying
+     */
+    private Animation<TextureRegion> flyingAnimation2;
+
+    private  boolean flying;
+
+    private boolean headRight;
+
+    private boolean isSecond = false;
+
+    /**
      * The texture used for the bird not flying
      */
     private TextureRegion nonFlyingAnimation;
 
     /**
-     * Is the bird flying.
+     * The texture used for the bird two not flying
      */
-    private boolean flying;
+    private TextureRegion nonFlyingAnimation2;
 
     /**
      * Time since the space ship started the game. Used
@@ -58,8 +70,10 @@ public class BirdView extends EntityView {
      */
     @Override
     public Sprite createSprite(MyBouncyBird game) {
-        flyingAnimation = createFlyingAnimation(game);
-        nonFlyingAnimation = createNonFlyingAnimation(game);
+        flyingAnimation = createFlyingAnimation(game, "bird_fly.png");
+        flyingAnimation2 = createFlyingAnimation(game, "bird2_fly.png");
+        nonFlyingAnimation = createNonFlyingAnimation(game, "bird.png");
+        nonFlyingAnimation2 = createNonFlyingAnimation(game, "bird2.png");
 
         return new Sprite(nonFlyingAnimation);
     }
@@ -71,8 +85,8 @@ public class BirdView extends EntityView {
      *             asset manager to get textures.
      * @return the texture used when the bird is not flying
      */
-    private TextureRegion createNonFlyingAnimation(MyBouncyBird game) {
-        Texture notFlyingTexture = game.getAssetManager().get("bird.png");
+    private TextureRegion createNonFlyingAnimation(MyBouncyBird game, String path) {
+        Texture notFlyingTexture = game.getAssetManager().get(path);
         return new TextureRegion(notFlyingTexture, notFlyingTexture.getWidth(), notFlyingTexture.getHeight());
     }
 
@@ -83,12 +97,12 @@ public class BirdView extends EntityView {
      *             asset manager to get textures.
      * @return the animation used when the bird is flying
      */
-    private Animation<TextureRegion> createFlyingAnimation(MyBouncyBird game) {
-        Texture thrustTexture = game.getAssetManager().get("bird.png");
-        TextureRegion[][] thrustRegion = TextureRegion.split(thrustTexture, thrustTexture.getWidth() / 1, thrustTexture.getHeight());
+    private Animation<TextureRegion> createFlyingAnimation(MyBouncyBird game, String path) {
+        Texture thrustTexture = game.getAssetManager().get(path);
+        TextureRegion[][] thrustRegion = TextureRegion.split(thrustTexture, thrustTexture.getWidth() / 2, thrustTexture.getHeight());
 
-        TextureRegion[] frames = new TextureRegion[1];
-        System.arraycopy(thrustRegion[0], 0, frames, 0, 1);
+        TextureRegion[] frames = new TextureRegion[2];
+        System.arraycopy(thrustRegion[0], 0, frames, 0, 2);
 
         return new Animation<TextureRegion>(FRAME_TIME, frames);
     }
@@ -102,6 +116,9 @@ public class BirdView extends EntityView {
     public void update(EntityModel model) {
         super.update(model);
 
+        flying = ((BirdModel)model).isFlying();
+        isSecond = ((BirdModel)model).isSecond();
+        headRight = ((BirdModel) model).isHeadRight();
     }
 
     /**
@@ -116,14 +133,18 @@ public class BirdView extends EntityView {
         stateTime += Gdx.graphics.getDeltaTime();
 
         if (flying)
-            sprite.setRegion(flyingAnimation.getKeyFrame(stateTime, true));
+            if (isSecond)
+                sprite.setRegion(flyingAnimation2.getKeyFrame(stateTime, true));
+            else
+                sprite.setRegion(flyingAnimation.getKeyFrame(stateTime, true));
         else
-            sprite.setRegion(nonFlyingAnimation);
+            if (isSecond)
+                sprite.setRegion(nonFlyingAnimation2);
+            else
+                sprite.setRegion(nonFlyingAnimation);
 
+        sprite.flip(!headRight, false);
         sprite.draw(batch);
     }
 
-    public void setFlying(boolean flying) {
-        this.flying = flying;
-    }
 }

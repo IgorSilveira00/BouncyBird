@@ -22,15 +22,6 @@ public class GameController implements ContactListener{
     private static GameController instance;
 
     /**
-     * Game score for the first bird.
-     */
-    private static int GAME_SCORE_ONE = 0;/**
-
-     * Game score for the second bird.
-     */
-    private static int GAME_SCORE_TWO = 0;
-
-    /**
      * The arena width in meters.
      */
     public static final int ROOM_WIDTH = 60;
@@ -68,7 +59,11 @@ public class GameController implements ContactListener{
     /**
      * The bird's body.
      */
-    private List<BirdBody> birdBodies = new ArrayList<BirdBody>();
+    private List<BirdBody> birdBodies = new ArrayList<BirdBody>();/**
+
+     * The bird's body.
+     */
+    private List<LifeBody> lifesBodies = new ArrayList<LifeBody>();
 
     /**
      * List of the bodies in the right wall.
@@ -119,9 +114,14 @@ public class GameController implements ContactListener{
         world = new World(new Vector2(0, 0), true);
 
         birdBodies.add(new BirdBody(world, GameModel.getInstance().getBird().get(0)));
+        ((BirdModel) birdBodies.get(0).getUserData()).setFlying(true);
+        ((BirdModel) birdBodies.get(0).getUserData()).setHeadRight(true);
 
-        if (GameView.isTWO_PLAYERS())
+        if (GameView.isTWO_PLAYERS()) {
             birdBodies.add(new BirdBody(world, GameModel.getInstance().getBird().get(1)));
+            ((BirdModel) birdBodies.get(1).getUserData()).setFlying(true);
+            ((BirdModel) birdBodies.get(1).getUserData()).setHeadRight(false);
+        }
 
         List<SpikeModel> floor_ceiling_spikes = GameModel.getInstance().getFloor_Ceiling_spikes();
         List<SpikeModel> right_wall_spikes = GameModel.getInstance().getRight_wall_spikes();
@@ -137,11 +137,14 @@ public class GameController implements ContactListener{
         for (EdgeModel edge: edges)
             new EdgeBody(world, edge);
 
+        /*if (GameView.isTWO_PLAYERS()) {
+            lifesBodies.add(new LifeBody(world, GameModel.getInstance().getLifes().get(0)));
+            lifesBodies.add(new LifeBody(world, GameModel.getInstance().getLifes().get(1)));
+        }*/
+
         world.setContactListener(this);
 
         BIRD_X_SPEED = 0.3f;
-        GAME_SCORE_ONE = 0;
-        GAME_SCORE_TWO = 0;
     }
 
     /**
@@ -165,7 +168,7 @@ public class GameController implements ContactListener{
 
         //TODO
         if (!SPIKES_OUT)
-            growSpikes(processAmount());
+            ;//growSpikes(processAmount());
 
         float frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
@@ -190,7 +193,7 @@ public class GameController implements ContactListener{
             birdBodies.get(1).setTransform(birdBodies.get(1).getX() - BIRD_X_SPEED, birdBodies.get(1).getY(), 0);
 
         if (readyToRemove && !world.isLocked())
-            degrowSpikes();
+            ;//degrowSpikes();
 
         if (birdBodies.get(0).getX() > ROOM_WIDTH / 2 - 1
                 & birdBodies.get(0).getX() < ROOM_WIDTH / 2 + 1)
@@ -344,22 +347,6 @@ public class GameController implements ContactListener{
     }
 
     /**
-     * Returns the current game score.
-     * @return the game score.
-     */
-    public static int getGameScoreOne() {
-        return GAME_SCORE_ONE;
-    }
-
-    /**
-     * Returns the current game score.
-     * @return the game score.
-     */
-    public static int getGameScoreTwo() {
-        return GAME_SCORE_TWO;
-    }
-
-    /**
      * A contact between two objects was detected.
      * @param contact the detected contact
      */
@@ -374,9 +361,9 @@ public class GameController implements ContactListener{
             bonusCollision(bodyB);
 
         if (bodyA.getUserData() instanceof BirdModel && bodyB.getUserData() instanceof SpikeModel)
-            birdSpikeCollision(bodyB);
+            birdSpikeCollision(bodyB, bodyA);
         if (bodyA.getUserData() instanceof SpikeModel && bodyB.getUserData() instanceof BirdModel)
-            birdSpikeCollision(bodyA);
+            birdSpikeCollision(bodyA, bodyB);
 
         if (bodyA.getUserData() instanceof BirdModel && bodyB.getUserData() instanceof EdgeModel)
             birdEdgeCollision();
@@ -398,19 +385,20 @@ public class GameController implements ContactListener{
     }
 
     //TODO game over
-    private void birdSpikeCollision(Body bodyA) {
+    private void birdSpikeCollision(Body bodyA, Body bodyB) {
         ((SpikeModel) bodyA.getUserData()).setNormalTexture(false);
+        ((BirdModel) bodyB.getUserData()).decNumberLifes();
         END = true;
     }
 
     /**
      * The bonus collided with something (probably the bird),
      * lets remove it.
-     * @param body the bonus that collided
+     * @param bonusBody the bonus that collided
      */
-    private void bonusCollision(Body body) {
-        ((BonusModel) body.getUserData()).setFlaggedForRemoval(true);
-        GAME_SCORE_ONE += 1;
+    private void bonusCollision(Body bonusBody) {
+        ((BonusModel) bonusBody.getUserData()).setFlaggedForRemoval(true);
+        GameModel.getInstance().incScore();
     }
 
     /**
@@ -419,7 +407,12 @@ public class GameController implements ContactListener{
     private void birdEdgeCollision() {
         if (!hasTurned) {
             BIRD_X_SPEED *= -1;
-            GAME_SCORE_ONE += 1;
+
+            //invert birds textures
+            for (BirdBody body: birdBodies)
+                ((BirdModel) body.getUserData()).setHeadRight(! ((BirdModel) body.getUserData()).isHeadRight());
+
+            GameModel.getInstance().incScore();
             hasTurned = true;
             GameView.playHit();
             DIFFICULTY_COUNTER++;

@@ -17,8 +17,8 @@ public class BonusModel extends EntityModel{
      * @param y The y-coordinate of this bonus in meters.
      */
     public BonusModel(float SPIKE_HEIGHT) {
-        super(random(SPIKE_HEIGHT, GameView.VIEWPORT_WIDTH - SPIKE_HEIGHT),
-                random(SPIKE_HEIGHT, GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT),
+        super(random(SPIKE_HEIGHT, GameView.VIEWPORT_WIDTH - 2 * SPIKE_HEIGHT),
+                random(SPIKE_HEIGHT, GameView.VIEWPORT_HEIGHT - 2 * SPIKE_HEIGHT),
                 0);
     }
 

@@ -28,9 +28,14 @@ public class GameModel {
     public static final float SPIKE_HEIGHT = 4f;
 
     /**
-     * The bird controlled by the user in this game.
+     * The birds controlled by the users in this game.
      */
-    private List<BirdModel> bird = new ArrayList<BirdModel>();
+    private List<BirdModel> birds = new ArrayList<BirdModel>();
+
+    /**
+     * The list of the objects who display the lives.
+     */
+    private List<LifeModel> lifes = new ArrayList<LifeModel>();
 
     /**
      * Amount in seconds that a bonus lasts.
@@ -51,6 +56,8 @@ public class GameModel {
      * The spikes present in the game's room's right wall.
      */
     private List<SpikeModel> right_wall_spikes;
+
+    private int GAME_SCORE = 0;
 
     /**
      * The edges of the game.
@@ -83,14 +90,19 @@ public class GameModel {
         left_wall_spikes = new ArrayList<SpikeModel>();
         edges = new ArrayList<EdgeModel>();
 
-       bird.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
+       birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
                 GameView.VIEWPORT_HEIGHT / 2,
                 0));
 
-        if (GameView.isTWO_PLAYERS())
-            bird.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
+        if (GameView.isTWO_PLAYERS()) {
+            birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
                     GameView.VIEWPORT_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER,
                     0));
+            birds.get(1).setSecond(true);
+        }
+
+        for (int i = 0; i < birds.size(); i++)
+            birds.get(i).setFlying(false);
 
         for (int i = 0; i < AMOUNT_SPIKES; i++){
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
@@ -127,6 +139,13 @@ public class GameModel {
 
         //right edge
         edges.add(new EdgeModel(GameView.VIEWPORT_WIDTH, GameView.VIEWPORT_HEIGHT , (float) Math.PI / 2 ));
+
+        /*if (GameView.isTWO_PLAYERS()) {
+            lifes.add(new LifeModel(SPIKE_HEIGHT,
+                    GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT / 2, 0));
+            lifes.add(new LifeModel(GameView.VIEWPORT_WIDTH - SPIKE_HEIGHT,
+                    GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT / 2, 0));
+        }*/
     }
 
     /**
@@ -134,7 +153,7 @@ public class GameModel {
      * @return the bird.
      */
     public List<BirdModel> getBird() {
-        return bird;
+        return birds;
     }
 
     /**
@@ -166,6 +185,12 @@ public class GameModel {
      * @return the edges list.
      */
     public List<EdgeModel> getEdges() { return edges;}
+
+    /**
+     * Returns the lifes models.
+     * @return the lifes list.
+     */
+    public List<LifeModel> getLifes() { return lifes;}
 
     /**
      * Returns the bonus.
@@ -206,5 +231,13 @@ public class GameModel {
 
     public static void dispose() {
         instance = null;
+    }
+
+    public int getGAME_SCORE() {
+        return GAME_SCORE;
+    }
+
+    public void incScore() {
+        GAME_SCORE++;
     }
 }

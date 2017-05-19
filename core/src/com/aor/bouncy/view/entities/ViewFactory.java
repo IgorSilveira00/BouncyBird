@@ -25,6 +25,7 @@ public class ViewFactory {
             if (model.getType() == BIRD) cache.put(model.getType(), new BirdView(game));
             if (model.getType() == EDGE) cache.put(model.getType(), new EdgeView(game));
             if (model.getType() == BONUS) cache.put(model.getType(), new BonusView(game));
+            if (model.getType() == LIFE) cache.put(model.getType(), new LifeView(game));
         }
         return cache.get(model.getType());
     }
