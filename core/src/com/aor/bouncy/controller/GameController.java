@@ -137,11 +137,6 @@ public class GameController implements ContactListener{
         for (EdgeModel edge: edges)
             new EdgeBody(world, edge);
 
-        /*if (GameView.isTWO_PLAYERS()) {
-            lifesBodies.add(new LifeBody(world, GameModel.getInstance().getLifes().get(0)));
-            lifesBodies.add(new LifeBody(world, GameModel.getInstance().getLifes().get(1)));
-        }*/
-
         world.setContactListener(this);
 
         BIRD_X_SPEED = 0.3f;
@@ -162,7 +157,8 @@ public class GameController implements ContactListener{
      * @param delta The size of this physics step in seconds.
      */
     public boolean update(float delta) {
-        generateBonus(delta);
+        if (!GameView.isTWO_PLAYERS())
+         generateBonus(delta);
 
         GameModel.getInstance().update(delta);
 

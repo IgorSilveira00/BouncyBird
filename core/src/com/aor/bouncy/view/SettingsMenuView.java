@@ -120,7 +120,7 @@ public class SettingsMenuView extends ScreenAdapter{
                 FX_CHECK.getY() - 2 * COLOR_BUTTON.getHeight());
 
         FX_CHECK.setChecked(game.isFX_ENABLED());
-        MUSIC_CHECK.setChecked(game.getBACKGROUND_MUSIC().isPlaying());
+        MUSIC_CHECK.setChecked(game.isMusicEnabled());
 
         addActors();
         addListeners();
@@ -145,10 +145,11 @@ public class SettingsMenuView extends ScreenAdapter{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
-                if (game.getBACKGROUND_MUSIC().isPlaying())
-                    game.getBACKGROUND_MUSIC().pause();
-                else
+                game.setMusicEnabled(!game.isMusicEnabled());
+                if (game.isMusicEnabled() && !game.getBACKGROUND_MUSIC().isPlaying())
                     game.getBACKGROUND_MUSIC().play();
+                else
+                    game.getBACKGROUND_MUSIC().pause();
             }
         });
 

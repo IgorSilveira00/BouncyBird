@@ -15,6 +15,7 @@ public class MyBouncyBird extends Game {
 
 	private Music BACKGROUND_MUSIC;
 	private static boolean FX_ENABLED = true;
+	private static boolean MUSIC_ENABLED = true;
 
 	/**
 	 * Creates the game. Initializes the sprite batch and asset manager.
@@ -34,6 +35,14 @@ public class MyBouncyBird extends Game {
 
 	public void setFX_ENABLED(boolean FX_ENABLED) {
 		this.FX_ENABLED = FX_ENABLED;
+	}
+
+	public static boolean isMusicEnabled() {
+		return MUSIC_ENABLED;
+	}
+
+	public static void setMusicEnabled(boolean musicEnabled) {
+		MUSIC_ENABLED = musicEnabled;
 	}
 
 	/**

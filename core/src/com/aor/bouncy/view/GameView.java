@@ -37,7 +37,22 @@ public class GameView extends ScreenAdapter {
     /**
      * Boolean that decides if players are ready and controller has to work physics.
      */
-    private boolean READY = false;
+    private boolean READY_PLAYER_ONE = false;
+
+    /**
+     * Boolean that decides if players are ready and controller has to work physics.
+     */
+    private boolean READY_PLAYER_TWO = false;
+
+    /**
+     * Boolean that decides if players are ready and controller has to work physics.
+     */
+    private boolean IS_RUNNING = false;
+
+    /**
+     * Time passed since last time. For score and start countdown use only.
+     */
+    private float passedTime = 4;
 
     /**
      * Used to debug the position of the physics fixtures
@@ -85,6 +100,12 @@ public class GameView extends ScreenAdapter {
 
     private static Sound JUMP_EFFECT;
 
+    private static Sound END_EFFECT;
+
+    private static boolean FIRST_TIME = true;
+
+    private boolean endHasPlayed = false;
+
     private boolean END = false;
 
     /**
@@ -98,15 +119,25 @@ public class GameView extends ScreenAdapter {
         camera = createCamera();
         //menuView.setCameras(debugRenderer, debugCamera);
 
-        if (!TWO_PLAYERS)
+        if (!TWO_PLAYERS) {
             createLabels();
+            READY_PLAYER_TWO = true;
+        }
 
-        getSoundEffects();
+        if (FIRST_TIME) {
+            getSoundEffects();
+            FIRST_TIME = false;
+        }
+
+        IS_RUNNING = false;
+        passedTime = 4;
+
     }
 
     private void getSoundEffects() {
         EDGE_HIT_EFFECT = game.getAssetManager().get("edge-hit.wav");
         JUMP_EFFECT = game.getAssetManager().get("jump.wav");
+        END_EFFECT = game.getAssetManager().get("dead.mp3");
     }
 
     /**
@@ -165,11 +196,13 @@ public class GameView extends ScreenAdapter {
     @Override
     public void render(float delta) {
 
-        handleInputs(delta);
+         handleInputs(delta);
 
-        if (READY) {
+        if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
+            if (IS_RUNNING) {
             END = GameController.getInstance().update(delta);
             GameController.getInstance().removeFlagged();
+            }
         }
 
         game.getBatch().setProjectionMatrix(camera.combined);
@@ -182,24 +215,121 @@ public class GameView extends ScreenAdapter {
         game.getBatch().begin();
         drawBackground();
 
+        if (END) {
+            if (game.isMusicEnabled())
+                game.getBACKGROUND_MUSIC().pause();
+
+            if (!endHasPlayed) {
+                END_EFFECT.play();
+                endHasPlayed = true;
+            }
+
+            GameModel.getInstance().getBird().get(0).setFlying(false);
+            if (!TWO_PLAYERS) {
+                drawScore();
+                passedTime += delta;
+            }
+            else {
+                GameModel.getInstance().getBird().get(1).setFlying(false);
+                passedTime += delta;
+            }
+            IS_RUNNING = false;
+
+            if (passedTime > 3) {
+                if (game.isMusicEnabled())
+                    game.getBACKGROUND_MUSIC().play();
+                game.setScreen(new MainMenuView(game, false));
+            }
+        }
         if (TWO_PLAYERS)
             drawLifes();
 
         drawEntities();
+
+        if (!READY_PLAYER_ONE || !READY_PLAYER_TWO)
+            drawReadies();
+        else {
+            if (!IS_RUNNING && !END) {
+                passedTime -= delta;
+                countdownTimer();
+            }
+        }
+
         game.getBatch().end();
 
-        if (END) {
-            camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 100/camera.viewportWidth);
-
-
-           // game.setScreen(new MainMenuView(game, false));
-        }
 
         if (DEBUG_PHYSICS) {
             debugCamera = camera.combined.cpy();
             debugCamera.scl(1 / PIXEL_TO_METER);
             debugRenderer.render(GameController.getInstance().getWorld(), debugCamera);
         }
+    }
+
+    private void countdownTimer() {
+        Texture t1;
+        boolean draw = true;
+
+        if (passedTime > 3)
+            t1 = game.getAssetManager().get("start_3.png", Texture.class);
+        else if (passedTime > 2)
+            t1 = game.getAssetManager().get("start_2.png", Texture.class);
+        else if (passedTime > 1)
+            t1 = game.getAssetManager().get("start_1.png", Texture.class);
+        else if (passedTime > 0)
+            t1 = game.getAssetManager().get("start.png", Texture.class);
+        else {
+            t1 = game.getAssetManager().get("start.png", Texture.class);
+            draw = false;
+            IS_RUNNING = true;
+            passedTime = 0;
+        }
+
+        Image i1 = new Image(t1);
+
+        i1.scaleBy(2);
+        i1.setPosition(draw ? 0 : 10000,
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f - VIEWPORT_HEIGHT / PIXEL_TO_METER / (TWO_PLAYERS ? -10f : 6f));
+        i1.draw(game.getBatch(), 0.8f);
+
+    }
+
+    /**
+     * Upon losing the scoreing is displayed on screen.
+     */
+    private void drawScore() {
+        Texture t1 = game.getAssetManager().get("score_template.png", Texture.class);
+        Image i1 = new Image(t1);
+        i1.scaleBy(2);
+        i1.setPosition(0,
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f - VIEWPORT_HEIGHT / PIXEL_TO_METER / (TWO_PLAYERS ? -10f : 6f));
+
+        i1.draw(game.getBatch(), 0.8f);
+    }
+
+    /**
+     * Draws the "are you ready textures" on screen.
+     */
+    private void drawReadies() {
+        Texture t2; Image i2 = new Image();
+        Texture t1 = game.getAssetManager().get("ready_p1.png", Texture.class);
+        Image i1 = new Image(t1);
+        i1.scaleBy(2);
+        i1.setPosition(0,
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f - VIEWPORT_HEIGHT / PIXEL_TO_METER / (TWO_PLAYERS ? -10f : 6f));
+
+        if (TWO_PLAYERS) {
+            t2 = game.getAssetManager().get("ready_p2.png", Texture.class);
+            i2 = new Image(t2);
+            i2.scaleBy(2);
+            i2.setPosition(0,
+                    12f);
+
+        }
+
+        if (!READY_PLAYER_ONE)
+            i1.draw(game.getBatch(), 0.8f);
+        if (!READY_PLAYER_TWO)
+            i2.draw(game.getBatch(), 0.8f);
     }
 
     public static boolean isTWO_PLAYERS() {
@@ -213,15 +343,18 @@ public class GameView extends ScreenAdapter {
      */
     private void handleInputs(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            if (READY) {
+            if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
                 playJump();
                 GameController.getInstance().jump(0);
             }
-            READY = true;
+            READY_PLAYER_ONE = true;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
-            playJump();
-            GameController.getInstance().jump(1);
+            if (READY_PLAYER_TWO && READY_PLAYER_ONE && IS_RUNNING) {
+                playJump();
+                GameController.getInstance().jump(1);
+            }
+            READY_PLAYER_TWO = true;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             MainMenuView.playClick();
@@ -242,8 +375,8 @@ public class GameView extends ScreenAdapter {
         //TODO pontos separados para os dois
 
         if (!TWO_PLAYERS) {
-        scoreLabels.get(0).setText(Integer.toString(GameModel.getInstance().getGAME_SCORE()));
-        scoreLabels.get(0).draw(game.getBatch(), 1);
+            scoreLabels.get(0).setText(Integer.toString(GameModel.getInstance().getGAME_SCORE()));
+            scoreLabels.get(0).draw(game.getBatch(), 1);
         }
 
         for (int i = 0; i < floor_ceiling_spikes.size(); i++) {
@@ -300,13 +433,13 @@ public class GameView extends ScreenAdapter {
     }
 
     private void drawLifes() {
-        Texture t1 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(0).getNUMBER_LIFES() + ".png", Texture.class);
+        Texture t1 = game.getAssetManager().get("hearts" + (GameModel.getInstance().getBird().get(0).getNUMBER_LIFES() > 0 ? GameModel.getInstance().getBird().get(0).getNUMBER_LIFES() : 1) + "_p1.png", Texture.class);
         Image i1 = new Image(t1);
         i1.scaleBy(2);
         i1.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 8f,
                 VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f - VIEWPORT_HEIGHT / PIXEL_TO_METER / 6f);
 
-        Texture t2 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(1).getNUMBER_LIFES() + ".png", Texture.class);
+        Texture t2 = game.getAssetManager().get("hearts" + (GameModel.getInstance().getBird().get(1).getNUMBER_LIFES() > 0 ? GameModel.getInstance().getBird().get(1).getNUMBER_LIFES() : 1) + "_p2.png", Texture.class);
         Image i2 = new Image(t2);
         i2.scaleBy(2);
         i2.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 2f + VIEWPORT_WIDTH / PIXEL_TO_METER / 6f,

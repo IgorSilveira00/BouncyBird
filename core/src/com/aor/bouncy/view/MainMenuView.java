@@ -41,8 +41,6 @@ public class MainMenuView extends ScreenAdapter {
      */
     private static final boolean DEBUG_PHYSICS = true;
 
-    private MainMenuView instance = this;
-
     /**
      * How much meters does a pixel represent
      */
@@ -267,6 +265,7 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "bird_fly.png" , Texture.class);
         this.game.getAssetManager().load( "bird2_fly.png" , Texture.class);
         this.game.getAssetManager().load("spike.png", Texture.class);
+        this.game.getAssetManager().load("worm.png", Texture.class);
         this.game.getAssetManager().load("spike-red.png", Texture.class);
         this.game.getAssetManager().load("floor.png", Texture.class);
         this.game.getAssetManager().load("background-music.mp3", Music.class);
@@ -282,9 +281,12 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "settings-down.png" , Texture.class);
         this.game.getAssetManager().load( "exit-up.png" , Texture.class);
         this.game.getAssetManager().load( "exit-down.png" , Texture.class);
-        this.game.getAssetManager().load( "hearts1.png" , Texture.class);
-        this.game.getAssetManager().load( "hearts2.png" , Texture.class);
-        this.game.getAssetManager().load( "hearts3.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts1_p1.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts1_p2.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts2_p1.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts2_p2.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts3_p1.png" , Texture.class);
+        this.game.getAssetManager().load( "hearts3_p2.png" , Texture.class);
         this.game.getAssetManager().load( "1plocal-up.png" , Texture.class);
         this.game.getAssetManager().load( "1plocal-down.png" , Texture.class);
         this.game.getAssetManager().load( "2plocal-up.png" , Texture.class);
@@ -292,7 +294,25 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "2pnet-up.png" , Texture.class);
         this.game.getAssetManager().load( "2pnet-down.png" , Texture.class);
         this.game.getAssetManager().load( "backplate.png" , Texture.class);
+        this.game.getAssetManager().load( "ready_p1.png" , Texture.class);
+        this.game.getAssetManager().load( "ready_p2.png" , Texture.class);
+        this.game.getAssetManager().load( "0.png" , Texture.class);
+        this.game.getAssetManager().load( "1.png" , Texture.class);
+        this.game.getAssetManager().load( "2.png" , Texture.class);
+        this.game.getAssetManager().load( "3.png" , Texture.class);
+        this.game.getAssetManager().load( "4.png" , Texture.class);
+        this.game.getAssetManager().load( "5.png" , Texture.class);
+        this.game.getAssetManager().load( "6.png" , Texture.class);
+        this.game.getAssetManager().load( "7.png" , Texture.class);
+        this.game.getAssetManager().load( "8.png" , Texture.class);
+        this.game.getAssetManager().load( "9.png" , Texture.class);
+        this.game.getAssetManager().load( "start_1.png" , Texture.class);
+        this.game.getAssetManager().load( "start_2.png" , Texture.class);
+        this.game.getAssetManager().load( "start_3.png" , Texture.class);
+        this.game.getAssetManager().load( "start.png" , Texture.class);
+        this.game.getAssetManager().load( "score_template.png" , Texture.class);
         this.game.getAssetManager().load( "click.mp3" , Sound.class);
+        this.game.getAssetManager().load( "dead.mp3" , Sound.class);
         this.game.getAssetManager().load( "jump.wav" , Sound.class);
 
         this.game.getAssetManager().finishLoading();
@@ -332,9 +352,7 @@ public class MainMenuView extends ScreenAdapter {
         Image plate = new Image(t);
 
         plate.scaleBy(2.4f);
-        plate.setPosition(Gdx.graphics.getWidth() / 2f + Math.round(0.1 * Gdx.graphics.getWidth()),
-                Gdx.graphics.getHeight() / 2f - Math.round(0.25 * Gdx.graphics.getHeight()));
-        plate.draw(game.getBatch(), 1);
+        //plate.draw(game.getBatch(), 1);
     }
 
     public OrthographicCamera getCamera() {

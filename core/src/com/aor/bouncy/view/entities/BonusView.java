@@ -46,7 +46,7 @@ public class BonusView extends EntityView {
      * @return the texture used.
      */
     private TextureRegion createTexture(MyBouncyBird game) {
-        Texture texture = game.getAssetManager().get("bird.png");
+        Texture texture = game.getAssetManager().get("worm.png");
         return new TextureRegion(texture, texture.getWidth(), texture.getHeight());
     }
 
