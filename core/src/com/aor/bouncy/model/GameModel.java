@@ -93,6 +93,7 @@ public class GameModel {
        birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
                 GameView.VIEWPORT_HEIGHT / 2,
                 0));
+       birds.get(0).setHeadRight(true);
 
         if (GameView.isTWO_PLAYERS()) {
             birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,

@@ -99,10 +99,10 @@ public class BirdView extends EntityView {
      */
     private Animation<TextureRegion> createFlyingAnimation(MyBouncyBird game, String path) {
         Texture thrustTexture = game.getAssetManager().get(path);
-        TextureRegion[][] thrustRegion = TextureRegion.split(thrustTexture, thrustTexture.getWidth() / 2, thrustTexture.getHeight());
+        TextureRegion[][] thrustRegion = TextureRegion.split(thrustTexture, thrustTexture.getWidth() / 6, thrustTexture.getHeight());
 
-        TextureRegion[] frames = new TextureRegion[2];
-        System.arraycopy(thrustRegion[0], 0, frames, 0, 2);
+        TextureRegion[] frames = new TextureRegion[6];
+        System.arraycopy(thrustRegion[0], 0, frames, 0, 6);
 
         return new Animation<TextureRegion>(FRAME_TIME, frames);
     }
