@@ -302,6 +302,7 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "start.png" , Texture.class);
         this.game.getAssetManager().load( "score_template.png" , Texture.class);
         this.game.getAssetManager().load( "click.mp3" , Sound.class);
+
         this.game.getAssetManager().load( "dead.mp3" , Sound.class);
         this.game.getAssetManager().load( "jump.wav" , Sound.class);
 
