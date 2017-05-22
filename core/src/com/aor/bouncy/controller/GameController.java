@@ -1,5 +1,6 @@
 package com.aor.bouncy.controller;
 
+import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.Utilities;
 import com.aor.bouncy.controller.entities.*;
 import com.aor.bouncy.model.GameModel;
@@ -86,6 +87,8 @@ public class GameController implements ContactListener{
     private boolean readyToRemove = false;
 
     private boolean END = false;
+
+    private boolean hasDecreasedLife = false;
 
     private final float UPWARD_SPEED = 0.6f;
     private final float GRAVITY = -0.03f;
@@ -379,7 +382,13 @@ public class GameController implements ContactListener{
     //TODO game over
     private void birdSpikeCollision(Body bodyA, Body bodyB) {
         ((SpikeModel) bodyA.getUserData()).setNormalTexture(false);
-        ((BirdModel) bodyB.getUserData()).decNumberLifes();
+        if (!hasDecreasedLife) {
+            if (((BirdModel) bodyB.getUserData()).isSecond())
+                MyBouncyBird.setPLAYER_TWO_LIFES(MyBouncyBird.getPLAYER_TWO_LIFES() - 1);
+            else
+                MyBouncyBird.setPLAYER_ONE_LIFES(MyBouncyBird.getPLAYER_ONE_LIFES() - 1);
+            hasDecreasedLife = true;
+        }
         END = true;
     }
 
@@ -442,5 +451,13 @@ public class GameController implements ContactListener{
 
     public static void dispose() {
         instance = null;
+    }
+
+    public void reset() {
+        ((BirdModel) birdBodies.get(0).getUserData()).setFlying(false);
+        ((BirdModel) birdBodies.get(0).getUserData()).setHeadRight(true);
+
+        ((BirdModel) birdBodies.get(1).getUserData()).setFlying(false);
+        ((BirdModel) birdBodies.get(1).getUserData()).setHeadRight(false);
     }
 }

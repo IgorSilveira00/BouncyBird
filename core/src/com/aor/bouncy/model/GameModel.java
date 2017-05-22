@@ -1,5 +1,6 @@
 package com.aor.bouncy.model;
 
+import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.entities.*;
 import com.aor.bouncy.view.GameView;
@@ -88,12 +89,14 @@ public class GameModel {
        birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
                 GameView.VIEWPORT_HEIGHT / 2,
                 0));
+       birds.get(0).setNUMBER_LIFES(MyBouncyBird.getPLAYER_ONE_LIFES());
        birds.get(0).setHeadRight(true);
 
         if (GameView.isTWO_PLAYERS()) {
             birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
                     GameView.VIEWPORT_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER,
                     0));
+            birds.get(1).setNUMBER_LIFES(MyBouncyBird.getPLAYER_TWO_LIFES());
             birds.get(1).setSecond(true);
         }
 
@@ -135,13 +138,6 @@ public class GameModel {
 
         //right edge
         edges.add(new EdgeModel(GameView.VIEWPORT_WIDTH, GameView.VIEWPORT_HEIGHT , (float) Math.PI / 2 ));
-
-        /*if (GameView.isTWO_PLAYERS()) {
-            lifes.add(new LifeModel(SPIKE_HEIGHT,
-                    GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT / 2, 0));
-            lifes.add(new LifeModel(GameView.VIEWPORT_WIDTH - SPIKE_HEIGHT,
-                    GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT / 2, 0));
-        }*/
     }
 
     /**
@@ -229,5 +225,15 @@ public class GameModel {
 
     public void incScore() {
         GAME_SCORE++;
+    }
+
+    public void reset() {
+        birds.get(0).setPosition(GameView.VIEWPORT_WIDTH / 2,
+                GameView.VIEWPORT_HEIGHT / 2);
+        birds.get(0).setHeadRight(true);
+
+        birds.get(1).setPosition(GameView.VIEWPORT_WIDTH / 2,
+                GameView.VIEWPORT_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER);
+        birds.get(1).setSecond(true);
     }
 }

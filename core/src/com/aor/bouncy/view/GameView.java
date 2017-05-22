@@ -92,7 +92,7 @@ public class GameView extends ScreenAdapter {
      */
     private Matrix4 debugCamera;
 
-    private List<Label> scoreLabels = new ArrayList<Label>();
+    Label scoreLabel;
 
     private static boolean TWO_PLAYERS;
 
@@ -145,15 +145,13 @@ public class GameView extends ScreenAdapter {
      * @return the score Label.
      */
     private void createLabels() {
-        Label scoreLabel = new Label(Integer.toString(GameModel.getInstance().getGAME_SCORE()),
+        scoreLabel = new Label(Integer.toString(GameModel.getInstance().getGAME_SCORE()),
                 new Label.LabelStyle(new BitmapFont(), null));
         scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER  / 2f,
                 VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
         scoreLabel.setFontScale(20);
 
         scoreLabel.setColor(Color.WHITE);
-
-        scoreLabels.add(scoreLabel);
     }
 
     public static void playHit() {
@@ -196,12 +194,13 @@ public class GameView extends ScreenAdapter {
     @Override
     public void render(float delta) {
 
-         handleInputs(delta);
+        //if (!END)
+            handleInputs(delta);
 
         if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
             if (IS_RUNNING) {
-            END = GameController.getInstance().update(delta);
-            GameController.getInstance().removeFlagged();
+                END = GameController.getInstance().update(delta);
+                GameController.getInstance().removeFlagged();
             }
         }
 
@@ -236,9 +235,22 @@ public class GameView extends ScreenAdapter {
             IS_RUNNING = false;
 
             if (passedTime > 3) {
-                if (game.isMusicEnabled())
-                    game.getBACKGROUND_MUSIC().play();
-                game.setScreen(new MainMenuView(game, false));
+                if (MyBouncyBird.getPLAYER_ONE_LIFES() < 1
+                        || MyBouncyBird.getPLAYER_TWO_LIFES() < 1) {
+
+                    drawWinner();
+
+                    if (game.isMusicEnabled())
+                        game.getBACKGROUND_MUSIC().play();
+                    MyBouncyBird.setPLAYER_ONE_LIFES(3);
+                    MyBouncyBird.setPLAYER_TWO_LIFES(3);
+                    game.setScreen(new MainMenuView(game, false));
+                }
+                else {
+                    GameModel.getInstance().dispose();
+                    GameController.getInstance().dispose();
+                    game.setScreen(new GameView(game, true));
+                }
             }
         }
         if (TWO_PLAYERS)
@@ -375,8 +387,8 @@ public class GameView extends ScreenAdapter {
         //TODO pontos separados para os dois
 
         if (!TWO_PLAYERS) {
-            scoreLabels.get(0).setText(Integer.toString(GameModel.getInstance().getGAME_SCORE()));
-            scoreLabels.get(0).draw(game.getBatch(), 1);
+            scoreLabel.setText(Integer.toString(GameModel.getInstance().getGAME_SCORE()));
+            scoreLabel.draw(game.getBatch(), 1);
         }
 
         for (int i = 0; i < floor_ceiling_spikes.size(); i++) {
@@ -418,28 +430,17 @@ public class GameView extends ScreenAdapter {
             EntityView view2 = ViewFactory.makeView(game, bird2);
             view2.update(bird2);
             view2.draw(game.getBatch());
-
-
-           /* List<LifeModel> lifes = GameModel.getInstance().getLifes();
-
-            EntityView lifeView1 = ViewFactory.makeView(game, lifes.get(0));
-            lifeView1.update(lifes.get(0));
-            lifeView1.draw(game.getBatch());
-
-            EntityView lifeView2 = ViewFactory.makeView(game, lifes.get(1));
-            lifeView2.update(lifes.get(1));
-            lifeView2.draw(game.getBatch());*/
         }
     }
 
     private void drawLifes() {
-        Texture t1 = game.getAssetManager().get("hearts" + (GameModel.getInstance().getBird().get(0).getNUMBER_LIFES() > 0 ? GameModel.getInstance().getBird().get(0).getNUMBER_LIFES() : 1) + "_p1.png", Texture.class);
+        Texture t1 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(0).getNUMBER_LIFES() + "_p1.png", Texture.class);
         Image i1 = new Image(t1);
         i1.scaleBy(2);
         i1.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 8f,
                 VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f - VIEWPORT_HEIGHT / PIXEL_TO_METER / 6f);
 
-        Texture t2 = game.getAssetManager().get("hearts" + (GameModel.getInstance().getBird().get(1).getNUMBER_LIFES() > 0 ? GameModel.getInstance().getBird().get(1).getNUMBER_LIFES() : 1) + "_p2.png", Texture.class);
+        Texture t2 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(1).getNUMBER_LIFES() + "_p2.png", Texture.class);
         Image i2 = new Image(t2);
         i2.scaleBy(2);
         i2.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 2f + VIEWPORT_WIDTH / PIXEL_TO_METER / 6f,

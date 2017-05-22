@@ -17,6 +17,9 @@ public class MyBouncyBird extends Game {
 	private static boolean FX_ENABLED = true;
 	private static boolean MUSIC_ENABLED = true;
 
+	private static int PLAYER_ONE_LIFES = 3;
+	private static int PLAYER_TWO_LIFES = 3;
+
 	/**
 	 * Creates the game. Initializes the sprite batch and asset manager.
 	 * Also starts the game until we have a main menu.
@@ -85,5 +88,21 @@ public class MyBouncyBird extends Game {
 	 */
 	public SpriteBatch getBatch() {
 		return batch;
+	}
+
+	public static int getPLAYER_ONE_LIFES() {
+		return PLAYER_ONE_LIFES;
+	}
+
+	public static void setPLAYER_ONE_LIFES(int PLAYER_ONE_LIFES) {
+		MyBouncyBird.PLAYER_ONE_LIFES = PLAYER_ONE_LIFES;
+	}
+
+	public static int getPLAYER_TWO_LIFES() {
+		return PLAYER_TWO_LIFES;
+	}
+
+	public static void setPLAYER_TWO_LIFES(int PLAYER_TWO_LIFES) {
+		MyBouncyBird.PLAYER_TWO_LIFES = PLAYER_TWO_LIFES;
 	}
 }

@@ -59,4 +59,8 @@ public class BirdModel extends EntityModel{
     public boolean isSecond() {
         return isSecond;
     }
+
+    public void setNUMBER_LIFES(int NUMBER_LIFES) {
+        this.NUMBER_LIFES = NUMBER_LIFES;
+    }
 }
