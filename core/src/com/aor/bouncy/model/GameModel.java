@@ -33,11 +33,6 @@ public class GameModel {
     private List<BirdModel> birds = new ArrayList<BirdModel>();
 
     /**
-     * The list of the objects who display the lives.
-     */
-    private List<LifeModel> lifes = new ArrayList<LifeModel>();
-
-    /**
      * Amount in seconds that a bonus lasts.
      */
     private static final float TIME_ALIVE = 8;
@@ -186,12 +181,6 @@ public class GameModel {
      * @return the edges list.
      */
     public List<EdgeModel> getEdges() { return edges;}
-
-    /**
-     * Returns the lifes models.
-     * @return the lifes list.
-     */
-    public List<LifeModel> getLifes() { return lifes;}
 
     /**
      * Returns the bonus.

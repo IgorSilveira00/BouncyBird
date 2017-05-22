@@ -61,10 +61,6 @@ public class GameController implements ContactListener{
      */
     private List<BirdBody> birdBodies = new ArrayList<BirdBody>();/**
 
-     * The bird's body.
-     */
-    private List<LifeBody> lifesBodies = new ArrayList<LifeBody>();
-
     /**
      * List of the bodies in the right wall.
      */
