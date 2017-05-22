@@ -296,16 +296,6 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "backplate.png" , Texture.class);
         this.game.getAssetManager().load( "ready_p1.png" , Texture.class);
         this.game.getAssetManager().load( "ready_p2.png" , Texture.class);
-        this.game.getAssetManager().load( "0.png" , Texture.class);
-        this.game.getAssetManager().load( "1.png" , Texture.class);
-        this.game.getAssetManager().load( "2.png" , Texture.class);
-        this.game.getAssetManager().load( "3.png" , Texture.class);
-        this.game.getAssetManager().load( "4.png" , Texture.class);
-        this.game.getAssetManager().load( "5.png" , Texture.class);
-        this.game.getAssetManager().load( "6.png" , Texture.class);
-        this.game.getAssetManager().load( "7.png" , Texture.class);
-        this.game.getAssetManager().load( "8.png" , Texture.class);
-        this.game.getAssetManager().load( "9.png" , Texture.class);
         this.game.getAssetManager().load( "start_1.png" , Texture.class);
         this.game.getAssetManager().load( "start_2.png" , Texture.class);
         this.game.getAssetManager().load( "start_3.png" , Texture.class);
