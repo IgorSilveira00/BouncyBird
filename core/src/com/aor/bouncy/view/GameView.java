@@ -57,7 +57,7 @@ public class GameView extends ScreenAdapter {
     /**
      * Used to debug the position of the physics fixtures
      */
-    private static final boolean DEBUG_PHYSICS = false;
+    private static final boolean DEBUG_PHYSICS = true;
 
     /**
      * How much meters does a pixel represent
@@ -195,13 +195,21 @@ public class GameView extends ScreenAdapter {
     public void render(float delta) {
 
         //if (!END)
-            handleInputs(delta);
+        handleInputs(delta);
 
         if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
             if (IS_RUNNING) {
+                GameModel.getInstance().getBird().get(0).setFlying(true);
+                if (isTWO_PLAYERS())
+                    GameModel.getInstance().getBird().get(1).setFlying(true);
+
                 END = GameController.getInstance().update(delta);
                 GameController.getInstance().removeFlagged();
             }
+        } else {
+            GameModel.getInstance().getBird().get(0).setFlying(false);
+            if (isTWO_PLAYERS())
+                GameModel.getInstance().getBird().get(1).setFlying(false);
         }
 
         game.getBatch().setProjectionMatrix(camera.combined);
@@ -229,27 +237,31 @@ public class GameView extends ScreenAdapter {
                 passedTime += delta;
             }
             else {
+                drawWinner();
                 GameModel.getInstance().getBird().get(1).setFlying(false);
                 passedTime += delta;
             }
             IS_RUNNING = false;
 
             if (passedTime > 3) {
-                if (MyBouncyBird.getPLAYER_ONE_LIFES() < 1
-                        || MyBouncyBird.getPLAYER_TWO_LIFES() < 1) {
+                if (TWO_PLAYERS) {
+                    if (MyBouncyBird.getPLAYER_ONE_LIFES() < 1
+                            || MyBouncyBird.getPLAYER_TWO_LIFES() < 1) {
 
-                    drawWinner();
-
-                    if (game.isMusicEnabled())
-                        game.getBACKGROUND_MUSIC().play();
-                    MyBouncyBird.setPLAYER_ONE_LIFES(3);
-                    MyBouncyBird.setPLAYER_TWO_LIFES(3);
-                    game.setScreen(new MainMenuView(game, false));
+                        if (game.isMusicEnabled())
+                            game.getBACKGROUND_MUSIC().play();
+                        MyBouncyBird.setPLAYER_ONE_LIFES(3);
+                        MyBouncyBird.setPLAYER_TWO_LIFES(3);
+                        game.setScreen(new MainMenuView(game, false));
+                    }
+                    else {
+                        GameModel.getInstance().dispose();
+                        GameController.getInstance().dispose();
+                        game.setScreen(new GameView(game, true));
+                    }
                 }
                 else {
-                    GameModel.getInstance().dispose();
-                    GameController.getInstance().dispose();
-                    game.setScreen(new GameView(game, true));
+                    game.setScreen(new MainMenuView(game, false));
                 }
             }
         }
@@ -274,6 +286,22 @@ public class GameView extends ScreenAdapter {
             debugCamera = camera.combined.cpy();
             debugCamera.scl(1 / PIXEL_TO_METER);
             debugRenderer.render(GameController.getInstance().getWorld(), debugCamera);
+        }
+    }
+
+    private void drawWinner() {
+
+        if (MyBouncyBird.getPLAYER_ONE_LIFES() < 1 || MyBouncyBird.getPLAYER_TWO_LIFES() < 1) {
+
+        Texture t1 = game.getAssetManager().get(MyBouncyBird.getPLAYER_TWO_LIFES() < 1 ? "win_p1.png" : "win_p2.png", Texture.class);
+
+        Image i1 = new Image(t1);
+
+        i1.scaleBy(2);
+        i1.setPosition(0,
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
+
+        i1.draw(game.getBatch(), 0.8f);
         }
     }
 

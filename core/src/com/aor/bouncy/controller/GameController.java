@@ -62,7 +62,7 @@ public class GameController implements ContactListener{
      */
     private List<BirdBody> birdBodies = new ArrayList<BirdBody>();/**
 
-    /**
+     /**
      * List of the bodies in the right wall.
      */
     private List<Body> bodiesToMove = new ArrayList<Body>();
@@ -82,13 +82,15 @@ public class GameController implements ContactListener{
      */
     public static final float corrector = 1f;
 
-    private int DIFFICULTY_COUNTER = 0;
+    private int DIFFICULTY_COUNTER = 1;
 
     private boolean readyToRemove = false;
 
     private boolean END = false;
 
     private boolean hasDecreasedLife = false;
+
+    private boolean readyToGrow = true;
 
     private final float UPWARD_SPEED = 0.6f;
     private final float GRAVITY = -0.03f;
@@ -157,13 +159,27 @@ public class GameController implements ContactListener{
      */
     public boolean update(float delta) {
         if (!GameView.isTWO_PLAYERS())
-         generateBonus(delta);
+            generateBonus(delta);
 
         GameModel.getInstance().update(delta);
 
         //TODO
-        if (!SPIKES_OUT)
-            ;//growSpikes(processAmount());
+
+        if (BIRD_X_SPEED > 0) {
+            if (birdBodies.get(0).getX() > GameView.VIEWPORT_WIDTH / 2f)
+                readyToGrow = true;
+            else
+                readyToGrow = false;
+        }
+        else {
+            if (birdBodies.get(0).getX() < GameView.VIEWPORT_WIDTH - GameView.VIEWPORT_WIDTH / 2f)
+                readyToGrow = true;
+            else
+                readyToGrow = false;
+        }
+
+        if (!SPIKES_OUT && readyToGrow)
+            growSpikes(processAmount());
 
         float frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
@@ -188,7 +204,7 @@ public class GameController implements ContactListener{
             birdBodies.get(1).setTransform(birdBodies.get(1).getX() - BIRD_X_SPEED, birdBodies.get(1).getY(), 0);
 
         if (readyToRemove && !world.isLocked())
-            ;//degrowSpikes();
+            degrowSpikes();
 
         if (birdBodies.get(0).getX() > ROOM_WIDTH / 2 - 1
                 & birdBodies.get(0).getX() < ROOM_WIDTH / 2 + 1)
@@ -214,34 +230,42 @@ public class GameController implements ContactListener{
      * @param amount amount of total spikes to move in the wall
      */
     private void growSpikes(int amount) {
-        float multiplier = 1;
-        if (BIRD_X_SPEED > 0)
-            multiplier *= -1;
+        if (bodiesToMove.size() > 0 || bodiesToRemove.size() > 0);
+        else {
 
-        bodiesToMove.clear();
-        bodiesToRemove.clear();
-        getCorrectSpikeBodies();
+            Array<Body> bodies = new Array<Body>();
+            world.getBodies(bodies);
 
-        int[] spikesIndexes = Utilities.getDistinctRandomNumbers(amount, GameModel.AMOUNT_SPIKES - 2);
+            float multiplier = 1;
+            if (BIRD_X_SPEED > 0)
+                multiplier *= -1;
 
-        if (GameView.isTWO_PLAYERS()) {
-            for (Integer index: spikesIndexes) {
-                bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x + corrector *
-                                (((SpikeModel) bodiesToMove.get(index).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? - GameModel.SPIKE_HEIGHT: GameModel.SPIKE_HEIGHT) ,
-                        bodiesToMove.get(index).getPosition().y,
-                        bodiesToMove.get(index).getAngle());
-                bodiesToRemove.add(bodiesToMove.get(index));
+            bodiesToMove.clear();
+            bodiesToRemove.clear();
+            getCorrectSpikeBodies();
+
+            int[] spikesIndexes = Utilities.getDistinctRandomNumbers(amount, GameModel.AMOUNT_SPIKES - 2);
+
+            if (GameView.isTWO_PLAYERS()) {
+                for (Integer index : spikesIndexes) {
+                    bodiesToMove.get(index).setTransform((((SpikeModel) bodiesToMove.get(index).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? GameView.VIEWPORT_WIDTH + 1.2f + GameController.corrector : - 1.2f - GameController.corrector) + 1.28f * corrector *
+                                    (((SpikeModel) bodiesToMove.get(index).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? -GameModel.SPIKE_HEIGHT : GameModel.SPIKE_HEIGHT),
+                            bodiesToMove.get(index).getPosition().y,
+                            bodiesToMove.get(index).getAngle());
+                    bodiesToRemove.add(bodiesToMove.get(index));
+                }
+            } else {
+                for (Integer index : spikesIndexes) {
+                    bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x + multiplier * 1.28f * corrector * GameModel.SPIKE_HEIGHT,
+                            bodiesToMove.get(index).getPosition().y,
+                            bodiesToMove.get(index).getAngle());
+                    bodiesToRemove.add(bodiesToMove.get(index));
+                }
             }
-        } else {
-            for (Integer index: spikesIndexes) {
-                bodiesToMove.get(index).setTransform(bodiesToMove.get(index).getPosition().x + multiplier * corrector * GameModel.SPIKE_HEIGHT,
-                        bodiesToMove.get(index).getPosition().y,
-                        bodiesToMove.get(index).getAngle());
-                bodiesToRemove.add(bodiesToMove.get(index));
-            }
+
+            readyToGrow = false;
+            SPIKES_OUT = true;
         }
-
-        SPIKES_OUT = true;
     }
 
     /**
@@ -255,7 +279,7 @@ public class GameController implements ContactListener{
             for (Body body : bodies)
                 if (body.getUserData() instanceof SpikeModel)
                     if (((SpikeModel) body.getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE
-                        || ((SpikeModel) body.getUserData()).getType() == EntityModel.ModelType.LEFT_SPIKE)
+                            || ((SpikeModel) body.getUserData()).getType() == EntityModel.ModelType.LEFT_SPIKE)
                         bodiesToMove.add(body);
         } else {
             if (BIRD_X_SPEED > 0) {  //bird is moving right
@@ -419,20 +443,25 @@ public class GameController implements ContactListener{
             DIFFICULTY_COUNTER++;
         }
         readyToRemove = true;
+        readyToGrow = false;
     }
 
     /**
      * Removes grown spikes. They go back in.
      */
     private void degrowSpikes() {
+
+
         for (int i = 0; i < bodiesToRemove.size(); i++)
-            bodiesToRemove.get(i).setTransform(bodiesToRemove.get(i).getPosition().x + corrector *
-                            (((SpikeModel) bodiesToMove.get(i).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? GameModel.SPIKE_HEIGHT: - GameModel.SPIKE_HEIGHT),
+            bodiesToRemove.get(i).setTransform((((SpikeModel) bodiesToMove.get(i).getUserData()).getType() == EntityModel.ModelType.RIGHT_SPIKE ? GameView.VIEWPORT_WIDTH + 1.2f + GameController.corrector : - 1.2f - GameController.corrector),
                     bodiesToRemove.get(i).getPosition().y,
                     bodiesToRemove.get(i).getAngle());
+        bodiesToMove.clear();
+        bodiesToRemove.clear();
 
         SPIKES_OUT = false;
         readyToRemove = false;
+        readyToGrow = true;
     }
 
     /**

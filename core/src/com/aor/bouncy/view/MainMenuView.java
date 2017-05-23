@@ -181,6 +181,8 @@ public class MainMenuView extends ScreenAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 playClick();
+                MyBouncyBird.setPLAYER_ONE_LIFES(3);
+                MyBouncyBird.setPLAYER_TWO_LIFES(3);
                 game.setScreen(new PlayMenuView(game));
                 disableButtons();
             }
@@ -300,6 +302,8 @@ public class MainMenuView extends ScreenAdapter {
         this.game.getAssetManager().load( "start_2.png" , Texture.class);
         this.game.getAssetManager().load( "start_3.png" , Texture.class);
         this.game.getAssetManager().load( "start.png" , Texture.class);
+        this.game.getAssetManager().load( "win_p1.png" , Texture.class);
+        this.game.getAssetManager().load( "win_p2.png" , Texture.class);
         this.game.getAssetManager().load( "score_template.png" , Texture.class);
         this.game.getAssetManager().load( "click.mp3" , Sound.class);
         this.game.getAssetManager().load( "dead.mp3" , Sound.class);

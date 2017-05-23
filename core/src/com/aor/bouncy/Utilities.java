@@ -1,9 +1,9 @@
 package com.aor.bouncy;
 
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import com.badlogic.gdx.physics.box2d.Body;
+
+import java.util.*;
 
 /**
  * By: kraskevich

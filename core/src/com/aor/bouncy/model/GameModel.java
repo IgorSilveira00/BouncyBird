@@ -116,12 +116,12 @@ public class GameModel {
         }
 
         for (int i = 0; i < AMOUNT_SPIKES - 2 ; i++) {
-            right_wall_spikes.add(new SpikeModel(GameView.VIEWPORT_WIDTH + 1.2f,
+            right_wall_spikes.add(new SpikeModel(GameView.VIEWPORT_WIDTH + 1.2f + GameController.corrector,
                     SPIKE_HEIGHT + SPIKE_HEIGHT * i,
                     (float) Math.PI,
                     EntityModel.ModelType.RIGHT_SPIKE));
 
-            left_wall_spikes.add(new SpikeModel(- 1.2f,
+            left_wall_spikes.add(new SpikeModel(- 1.2f - GameController.corrector,
                     SPIKE_HEIGHT + SPIKE_HEIGHT * i,
                     0,
                     EntityModel.ModelType.LEFT_SPIKE));

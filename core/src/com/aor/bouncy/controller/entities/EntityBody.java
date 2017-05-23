@@ -11,9 +11,8 @@ import static com.aor.bouncy.view.GameView.PIXEL_TO_METER;
 public abstract class EntityBody {
     final static short BIRD_BODY = 0x0001;
     final static short SPIKE_BODY = 0x0002;
-    final static short BONUS_BODY = 0x0003;
-    final static short EDGE_BODY = 0x0004;
-    final static short LIFE_BODY = 0x0005;
+    final static short BONUS_BODY = 0x0004;
+    final static short EDGE_BODY = 0x0008;
 
     /**
      * The Box2D body that supports this body.

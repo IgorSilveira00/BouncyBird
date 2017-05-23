@@ -179,6 +179,9 @@ public class PlayMenuView extends ScreenAdapter {
                 GameController.dispose();
                 GameModel.dispose();
 
+                MyBouncyBird.setPLAYER_ONE_LIFES(3);
+                MyBouncyBird.setPLAYER_TWO_LIFES(3);
+
                 game.setScreen(new GameView(game, true));
                 disableButtons();
             }
