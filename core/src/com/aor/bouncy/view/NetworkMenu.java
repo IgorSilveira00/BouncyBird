@@ -4,6 +4,7 @@ import com.aor.bouncy.MyBouncyBird;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -48,7 +49,11 @@ public class NetworkMenu extends ScreenAdapter{
 
     private TextButton BACK_BUTTON;
 
+    private Input.TextInputListener TEXT_AREA;
+
     private boolean firstTime = true;
+
+    private String receivedText;
 
     /**
      * Creates this screen.
@@ -69,6 +74,7 @@ public class NetworkMenu extends ScreenAdapter{
         Skin skin = new Skin();
         TextureAtlas textureAtlas = new TextureAtlas();
         TextButton.TextButtonStyle buttonStyle1, buttonStyle2, buttonStyle3;
+        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
 
         buttonStyle1 = new TextButton.TextButtonStyle();
         buttonStyle2 = new TextButton.TextButtonStyle();
@@ -85,6 +91,8 @@ public class NetworkMenu extends ScreenAdapter{
         buttonStyle1.font = font;
         buttonStyle2.font = font;
         buttonStyle3.font = font;
+        textFieldStyle.font = font;
+        textFieldStyle.font.setColor(Color.BLACK);
 
         //for the back button
         buttonStyle1.up = skin.getDrawable("back-up");
@@ -126,6 +134,17 @@ public class NetworkMenu extends ScreenAdapter{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
+                TEXT_AREA = new Input.TextInputListener() {
+                    @Override
+                    public void input(String text) {
+                        receivedText = text;
+                    }
+
+                    @Override
+                    public void canceled() {
+                    }
+                };
+                Gdx.input.getTextInput(TEXT_AREA, "Join a game", "", "Enter the given code here...");
             }
         });
 
@@ -193,6 +212,7 @@ public class NetworkMenu extends ScreenAdapter{
         MainMenuView.drawBackground();
         game.getBatch().end();
 
+        System.out.println(receivedText);
         stage.draw();
     }
 
