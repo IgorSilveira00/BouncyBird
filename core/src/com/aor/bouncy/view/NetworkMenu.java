@@ -16,6 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import static com.aor.bouncy.controller.GameController.ROOM_HEIGHT;
 import static com.aor.bouncy.controller.GameController.ROOM_WIDTH;
 
@@ -49,11 +52,15 @@ public class NetworkMenu extends ScreenAdapter{
 
     private TextButton BACK_BUTTON;
 
-    private Input.TextInputListener TEXT_AREA;
+    private TextField TEXT_AREA;
 
     private boolean firstTime = true;
 
-    private String receivedText;
+    private static String receivedText;
+
+    public static String getReceivedText() {
+        return receivedText;
+    }
 
     /**
      * Creates this screen.
@@ -86,13 +93,14 @@ public class NetworkMenu extends ScreenAdapter{
         readTexture("join_down", "join_down.png", textureAtlas);
         readTexture("back-up", "back-up.png", textureAtlas);
         readTexture("back-down", "back-down.png", textureAtlas);
+        readTexture("text_field", "text_field.png", textureAtlas);
         skin.addRegions(textureAtlas);
 
         buttonStyle1.font = font;
         buttonStyle2.font = font;
         buttonStyle3.font = font;
         textFieldStyle.font = font;
-        textFieldStyle.font.setColor(Color.BLACK);
+        textFieldStyle.fontColor = Color.BLACK;
 
         //for the back button
         buttonStyle1.up = skin.getDrawable("back-up");
@@ -116,6 +124,20 @@ public class NetworkMenu extends ScreenAdapter{
                 HOST_BUTTON.getY() - JOIN_BUTTON.getHeight());
         stage.addActor(JOIN_BUTTON);
 
+        textFieldStyle.background = skin.getDrawable("text_field");
+        try {
+            TEXT_AREA = new TextField("    Give your IP adress to a friend:   " +
+                    InetAddress.getLocalHost().getHostAddress().toString(), textFieldStyle);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        TEXT_AREA.setWidth(GameView.VIEWPORT_WIDTH / PIXEL_TO_METER / 2f);
+        TEXT_AREA.setPosition(Gdx.graphics.getWidth() / 2f - TEXT_AREA.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f);
+        stage.addActor(TEXT_AREA);
+        TEXT_AREA.setVisible(false);
+        TEXT_AREA.setDisabled(true);
+
         addListeners();
     }
 
@@ -127,6 +149,9 @@ public class NetworkMenu extends ScreenAdapter{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
+                MyBouncyBird.setIsServer(true);
+                disableButtons();
+                TEXT_AREA.setVisible(true);
             }
         });
 
@@ -134,7 +159,9 @@ public class NetworkMenu extends ScreenAdapter{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
-                TEXT_AREA = new Input.TextInputListener() {
+                MyBouncyBird.setIsServer(false);
+                disableButtons();
+                Input.TextInputListener textInputListener = new Input.TextInputListener() {
                     @Override
                     public void input(String text) {
                         receivedText = text;
@@ -144,7 +171,7 @@ public class NetworkMenu extends ScreenAdapter{
                     public void canceled() {
                     }
                 };
-                Gdx.input.getTextInput(TEXT_AREA, "Join a game", "", "Enter the given code here...");
+                Gdx.input.getTextInput(textInputListener, "Join a game", "", "Enter the given code here...");
             }
         });
 
@@ -156,6 +183,13 @@ public class NetworkMenu extends ScreenAdapter{
             }
         });
 
+    }
+
+    private void disableButtons() {
+        HOST_BUTTON.setVisible(false);
+        HOST_BUTTON.setDisabled(true);
+        JOIN_BUTTON.setVisible(false);
+        JOIN_BUTTON.setDisabled(true);
     }
 
     /**

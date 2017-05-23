@@ -20,6 +20,8 @@ public class MyBouncyBird extends Game {
 	private static int PLAYER_ONE_LIFES = 3;
 	private static int PLAYER_TWO_LIFES = 3;
 
+	private static boolean IS_SERVER;
+
 	/**
 	 * Creates the game. Initializes the sprite batch and asset manager.
 	 * Also starts the game until we have a main menu.
@@ -104,5 +106,13 @@ public class MyBouncyBird extends Game {
 
 	public static void setPLAYER_TWO_LIFES(int PLAYER_TWO_LIFES) {
 		MyBouncyBird.PLAYER_TWO_LIFES = PLAYER_TWO_LIFES;
+	}
+
+	public static boolean isIsServer() {
+		return IS_SERVER;
+	}
+
+	public static void setIsServer(boolean isServer) {
+		IS_SERVER = isServer;
 	}
 }
