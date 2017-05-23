@@ -161,7 +161,6 @@ public class PlayMenuView extends ScreenAdapter {
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
 
-
                 GameController.dispose();
                 GameModel.dispose();
 
@@ -191,6 +190,11 @@ public class PlayMenuView extends ScreenAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
+
+                GameController.dispose();
+                GameModel.dispose();
+
+                game.setScreen(new NetworkMenu(game));
             }
         });
 
