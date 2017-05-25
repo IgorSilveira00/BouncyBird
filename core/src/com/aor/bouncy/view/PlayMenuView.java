@@ -167,7 +167,7 @@ public class PlayMenuView extends ScreenAdapter {
                 GameModel.dispose();
 
                 try {
-                    game.setScreen(new GameView(game, false, false));
+                    game.setScreen(new GameView(game, false, false, null));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -188,7 +188,7 @@ public class PlayMenuView extends ScreenAdapter {
                 MyBouncyBird.setPLAYER_TWO_LIFES(3);
 
                 try {
-                    game.setScreen(new GameView(game, true, false));
+                    game.setScreen(new GameView(game, true, false, null));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
