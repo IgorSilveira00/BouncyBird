@@ -1,6 +1,7 @@
 package com.aor.bouncy.view;
 
 import com.aor.bouncy.MyBouncyBird;
+import com.aor.bouncy.ServerClient;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -60,6 +61,8 @@ public class NetworkMenu extends ScreenAdapter{
     private boolean firstTime = true;
 
     private boolean ready = false;
+
+    private ServerClient serverClient = null;
 
     private static String receivedText;
 
@@ -170,9 +173,14 @@ public class NetworkMenu extends ScreenAdapter{
                 START_BUTTON.setVisible(true);
                 START_BUTTON.setDisabled(false);
                 game.setIS_NET(true);
+                try {
+                    serverClient = new ServerClient(true, "");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 if (ready) {
                     try {
-                        game.setScreen(new GameView(game, true, true));
+                        game.setScreen(new GameView(game, true, true, serverClient));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -199,7 +207,12 @@ public class NetworkMenu extends ScreenAdapter{
                 Gdx.input.getTextInput(textInputListener, "Join a game", "", "Enter the given code here...");
                 game.setIS_NET(true);
                 try {
-                    game.setScreen(new GameView(game, true, false));
+                    serverClient = new ServerClient(false, receivedText);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    game.setScreen(new GameView(game, true, false, serverClient));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

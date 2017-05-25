@@ -118,7 +118,7 @@ public class GameView extends ScreenAdapter {
      * Creates this screen.
      * @param game The game that called this screen
      */
-    public GameView(MyBouncyBird game, boolean TWO_PLAYERS, boolean IS_SERVER) throws IOException {
+    public GameView(MyBouncyBird game, boolean TWO_PLAYERS, boolean IS_SERVER, ServerClient serverClient) throws IOException {
         this.game = game;
         this.TWO_PLAYERS = TWO_PLAYERS;
         this.IS_SERVER = IS_SERVER;
@@ -132,7 +132,7 @@ public class GameView extends ScreenAdapter {
         }
 
         if (MyBouncyBird.isIS_NET())
-            serverClient = new ServerClient(IS_SERVER, NetworkMenu.getReceivedText());
+            this.serverClient = serverClient;
 
         if (FIRST_TIME) {
             getSoundEffects();
@@ -280,7 +280,7 @@ public class GameView extends ScreenAdapter {
                         GameModel.getInstance().dispose();
                         GameController.getInstance().dispose();
                         try {
-                            game.setScreen(new GameView(game, true, IS_SERVER));
+                            game.setScreen(new GameView(game, true, IS_SERVER, serverClient));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
