@@ -62,6 +62,8 @@ public class NetworkMenu extends ScreenAdapter{
 
     private boolean ready = false;
 
+    private boolean readyJoin = false;
+
     private ServerClient serverClient = null;
 
     private static String receivedText;
@@ -197,6 +199,7 @@ public class NetworkMenu extends ScreenAdapter{
                     @Override
                     public void input(String text) {
                         receivedText = text;
+                        readyJoin = true;
                     }
 
                     @Override
@@ -211,10 +214,13 @@ public class NetworkMenu extends ScreenAdapter{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                if (readyJoin) {
                 try {
                     game.setScreen(new GameView(game, true, false, serverClient));
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+
                 }
             }
         });
