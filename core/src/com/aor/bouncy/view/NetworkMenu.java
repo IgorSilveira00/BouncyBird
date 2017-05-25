@@ -170,10 +170,12 @@ public class NetworkMenu extends ScreenAdapter{
                 START_BUTTON.setVisible(true);
                 START_BUTTON.setDisabled(false);
                 game.setIS_NET(true);
-                try {
-                    game.setScreen(new GameView(game, true, true));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (ready) {
+                    try {
+                        game.setScreen(new GameView(game, true, true));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -196,12 +198,10 @@ public class NetworkMenu extends ScreenAdapter{
                 };
                 Gdx.input.getTextInput(textInputListener, "Join a game", "", "Enter the given code here...");
                 game.setIS_NET(true);
-                if (ready) {
-                    try {
-                        game.setScreen(new GameView(game, true, false));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    game.setScreen(new GameView(game, true, false));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -277,7 +277,7 @@ public class NetworkMenu extends ScreenAdapter{
     public void render(float delta) {
         game.getBatch().setProjectionMatrix(camera.combined);
 
-       Gdx.gl.glClearColor( 103/255f, 69/255f, 117/255f, 1 );
+        Gdx.gl.glClearColor( 103/255f, 69/255f, 117/255f, 1 );
 
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
 
