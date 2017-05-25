@@ -139,11 +139,11 @@ public class NetworkMenu extends ScreenAdapter{
         textFieldStyle.background = skin.getDrawable("text_field");
         try {
             TEXT_AREA = new TextField("    Give your IP adress to a friend:   " +
-                    InetAddress.getLocalHost().getHostAddress().toString(), textFieldStyle);
+                    InetAddress.getLocalHost().getHostAddress(), textFieldStyle);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        TEXT_AREA.setWidth(GameView.VIEWPORT_WIDTH / PIXEL_TO_METER / 2f);
+        TEXT_AREA.setWidth(Gdx.graphics.getWidth() / 2f);
         TEXT_AREA.setPosition(Gdx.graphics.getWidth() / 2f - TEXT_AREA.getWidth() / 2f,
                 Gdx.graphics.getHeight() / 2f);
         stage.addActor(TEXT_AREA);
@@ -172,7 +172,7 @@ public class NetworkMenu extends ScreenAdapter{
                 MainMenuView.playClick();
                 disableButtons();
                 TEXT_AREA.setVisible(true);
-                START_BUTTON.setVisible(true);
+                /*START_BUTTON.setVisible(true);
                 START_BUTTON.setDisabled(false);
                 game.setIS_NET(true);
                 try {
@@ -186,7 +186,7 @@ public class NetworkMenu extends ScreenAdapter{
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
+                }*/
             }
         });
 
@@ -208,7 +208,7 @@ public class NetworkMenu extends ScreenAdapter{
                     }
                 };
                 Gdx.input.getTextInput(textInputListener, "Join a game", "", "Enter the given code here...");
-                game.setIS_NET(true);
+                /*game.setIS_NET(true);
                 try {
                     serverClient = new ServerClient(false, receivedText);
                 } catch (IOException e) {
@@ -221,7 +221,7 @@ public class NetworkMenu extends ScreenAdapter{
                     e.printStackTrace();
                 }
 
-                }
+                }*/
             }
         });
 
@@ -304,7 +304,6 @@ public class NetworkMenu extends ScreenAdapter{
         MainMenuView.drawBackground();
         game.getBatch().end();
 
-        System.out.println(receivedText);
         stage.draw();
     }
 
