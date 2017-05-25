@@ -336,8 +336,6 @@ public class MainMenuView extends ScreenAdapter {
         game.getBatch().end();
 
         stage.draw();
-
-        System.out.println(NetworkMenu.getReceivedText());
     }
 
     /**

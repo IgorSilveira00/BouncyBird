@@ -1,6 +1,7 @@
 package com.aor.bouncy.controller;
 
 import com.aor.bouncy.MyBouncyBird;
+import com.aor.bouncy.ServerClient;
 import com.aor.bouncy.Utilities;
 import com.aor.bouncy.controller.entities.*;
 import com.aor.bouncy.model.GameModel;
@@ -157,7 +158,7 @@ public class GameController implements ContactListener{
      * Calculates the next physics step of duration delta (in seconds)
      * @param delta The size of this physics step in seconds.
      */
-    public boolean update(float delta) {
+    public boolean update(float delta, ServerClient serverClient) {
         if (!GameView.isTWO_PLAYERS())
             generateBonus(delta);
 
@@ -198,10 +199,15 @@ public class GameController implements ContactListener{
         }
 
         processJump();
-        birdBodies.get(0).setTransform(birdBodies.get(0).getX() + BIRD_X_SPEED, birdBodies.get(0).getY(), 0);
 
-        if (birdBodies.size() > 1)
-            birdBodies.get(1).setTransform(birdBodies.get(1).getX() - BIRD_X_SPEED, birdBodies.get(1).getY(), 0);
+        if (serverClient == null) {
+            moveBodies("0;" + Float.toString(birdBodies.get(0).getX() + BIRD_X_SPEED) + ";" + Float.toString(birdBodies.get(0).getY()));
+
+            if (birdBodies.size() > 1)
+                moveBodies("1;" + Float.toString(birdBodies.get(1).getX() - BIRD_X_SPEED) + ";" + Float.toString(birdBodies.get(1).getY()));
+        } else {
+            moveBodies(serverClient.getIN_SENTENCE());
+        }
 
         if (readyToRemove && !world.isLocked())
             degrowSpikes();
@@ -266,6 +272,17 @@ public class GameController implements ContactListener{
             readyToGrow = false;
             SPIKES_OUT = true;
         }
+    }
+
+    public void moveBodies(String positions) {
+        int which;
+        float x, y;
+        String[] values = positions.split(";");
+        which = Integer.parseInt(values[0]);
+        x = Float.parseFloat(values[1]);
+        y = Float.parseFloat(values[2]);
+
+        birdBodies.get(which).setTransform(x, y, 0);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.aor.bouncy.view;
 
 import com.aor.bouncy.MyBouncyBird;
+import com.aor.bouncy.ServerClient;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.GameModel;
 import com.aor.bouncy.model.entities.*;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,13 +110,18 @@ public class GameView extends ScreenAdapter {
 
     private boolean END = false;
 
+    private ServerClient serverClient = null;
+
+    private boolean IS_SERVER;
+
     /**
      * Creates this screen.
      * @param game The game that called this screen
      */
-    public GameView(MyBouncyBird game, boolean TWO_PLAYERS) {
+    public GameView(MyBouncyBird game, boolean TWO_PLAYERS, boolean IS_SERVER) throws IOException {
         this.game = game;
         this.TWO_PLAYERS = TWO_PLAYERS;
+        this.IS_SERVER = IS_SERVER;
 
         camera = createCamera();
         //menuView.setCameras(debugRenderer, debugCamera);
@@ -123,6 +130,9 @@ public class GameView extends ScreenAdapter {
             createLabels();
             READY_PLAYER_TWO = true;
         }
+
+        if (MyBouncyBird.isIS_NET())
+            serverClient = new ServerClient(IS_SERVER, NetworkMenu.getReceivedText());
 
         if (FIRST_TIME) {
             getSoundEffects();
@@ -203,7 +213,18 @@ public class GameView extends ScreenAdapter {
                 if (isTWO_PLAYERS())
                     GameModel.getInstance().getBird().get(1).setFlying(true);
 
-                END = GameController.getInstance().update(delta);
+                if (serverClient != null) {
+
+                    serverClient.setOUT_SENTENCE(IS_SERVER ? "0;" : "1;" +
+                            Float.toString(GameModel.getInstance().getBird().get(IS_SERVER ? 0 : 1).getX()) + ";" +
+                            Float.toString(GameModel.getInstance().getBird().get(IS_SERVER ? 0 : 1).getY()));
+                    try {
+                        serverClient.update();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                END = GameController.getInstance().update(delta, serverClient);
                 GameController.getInstance().removeFlagged();
             }
         } else {
@@ -257,10 +278,15 @@ public class GameView extends ScreenAdapter {
                     else {
                         GameModel.getInstance().dispose();
                         GameController.getInstance().dispose();
-                        game.setScreen(new GameView(game, true));
+                        try {
+                            game.setScreen(new GameView(game, true, IS_SERVER));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 else {
+                    game.setIS_NET(false);
                     game.setScreen(new MainMenuView(game, false));
                 }
             }
@@ -293,15 +319,15 @@ public class GameView extends ScreenAdapter {
 
         if (MyBouncyBird.getPLAYER_ONE_LIFES() < 1 || MyBouncyBird.getPLAYER_TWO_LIFES() < 1) {
 
-        Texture t1 = game.getAssetManager().get(MyBouncyBird.getPLAYER_TWO_LIFES() < 1 ? "win_p1.png" : "win_p2.png", Texture.class);
+            Texture t1 = game.getAssetManager().get(MyBouncyBird.getPLAYER_TWO_LIFES() < 1 ? "win_p1.png" : "win_p2.png", Texture.class);
 
-        Image i1 = new Image(t1);
+            Image i1 = new Image(t1);
 
-        i1.scaleBy(2);
-        i1.setPosition(0,
-                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
+            i1.scaleBy(2);
+            i1.setPosition(0,
+                    VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
 
-        i1.draw(game.getBatch(), 0.8f);
+            i1.draw(game.getBatch(), 0.8f);
         }
     }
 

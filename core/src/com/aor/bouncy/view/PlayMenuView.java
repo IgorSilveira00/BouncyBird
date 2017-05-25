@@ -24,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import java.io.IOException;
+
 import static com.aor.bouncy.controller.GameController.*;
 
 /**
@@ -164,7 +166,11 @@ public class PlayMenuView extends ScreenAdapter {
                 GameController.dispose();
                 GameModel.dispose();
 
-                game.setScreen(new GameView(game, false));
+                try {
+                    game.setScreen(new GameView(game, false, false));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 disableButtons();
             }
@@ -181,7 +187,11 @@ public class PlayMenuView extends ScreenAdapter {
                 MyBouncyBird.setPLAYER_ONE_LIFES(3);
                 MyBouncyBird.setPLAYER_TWO_LIFES(3);
 
-                game.setScreen(new GameView(game, true));
+                try {
+                    game.setScreen(new GameView(game, true, false));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 disableButtons();
             }
         });

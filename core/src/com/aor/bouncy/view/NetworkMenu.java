@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -149,9 +150,14 @@ public class NetworkMenu extends ScreenAdapter{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
-                MyBouncyBird.setIsServer(true);
                 disableButtons();
                 TEXT_AREA.setVisible(true);
+                game.setIS_NET(true);
+                try {
+                    game.setScreen(new GameView(game, true, true));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -159,7 +165,6 @@ public class NetworkMenu extends ScreenAdapter{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
-                MyBouncyBird.setIsServer(false);
                 disableButtons();
                 Input.TextInputListener textInputListener = new Input.TextInputListener() {
                     @Override
@@ -172,6 +177,12 @@ public class NetworkMenu extends ScreenAdapter{
                     }
                 };
                 Gdx.input.getTextInput(textInputListener, "Join a game", "", "Enter the given code here...");
+                game.setIS_NET(true);
+                try {
+                    game.setScreen(new GameView(game, true, false));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
