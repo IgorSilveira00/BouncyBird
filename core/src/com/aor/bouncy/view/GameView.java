@@ -207,23 +207,24 @@ public class GameView extends ScreenAdapter {
         //if (!END)
         handleInputs(delta);
 
+        if (serverClient != null) {
+
+            serverClient.setOUT_SENTENCE(IS_SERVER ? "0;" : "1;" +
+                    Float.toString(GameModel.getInstance().getBird().get(IS_SERVER ? 0 : 1).getX()) + ";" +
+                    Float.toString(GameModel.getInstance().getBird().get(IS_SERVER ? 0 : 1).getY()));
+            try {
+                serverClient.update();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
             if (IS_RUNNING) {
                 GameModel.getInstance().getBird().get(0).setFlying(true);
                 if (isTWO_PLAYERS())
                     GameModel.getInstance().getBird().get(1).setFlying(true);
 
-                if (serverClient != null) {
-
-                    serverClient.setOUT_SENTENCE(IS_SERVER ? "0;" : "1;" +
-                            Float.toString(GameModel.getInstance().getBird().get(IS_SERVER ? 0 : 1).getX()) + ";" +
-                            Float.toString(GameModel.getInstance().getBird().get(IS_SERVER ? 0 : 1).getY()));
-                    try {
-                        serverClient.update();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
                 END = GameController.getInstance().update(delta, serverClient);
                 GameController.getInstance().removeFlagged();
             }
@@ -413,14 +414,26 @@ public class GameView extends ScreenAdapter {
                 playJump();
                 GameController.getInstance().jump(0);
             }
-            READY_PLAYER_ONE = true;
+            if (serverClient != null) {
+                if (IS_SERVER) {
+                    serverClient.setReady(true);
+                    READY_PLAYER_ONE = serverClient.isReady();
+                }
+            } else
+                READY_PLAYER_ONE = true;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
             if (READY_PLAYER_TWO && READY_PLAYER_ONE && IS_RUNNING) {
                 playJump();
                 GameController.getInstance().jump(1);
             }
-            READY_PLAYER_TWO = true;
+            if (serverClient != null) {
+                if (!IS_SERVER) {
+                    serverClient.setReady(true);
+                    READY_PLAYER_TWO = serverClient.isReady();
+                }
+            } else
+                READY_PLAYER_TWO = true;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             MainMenuView.playClick();

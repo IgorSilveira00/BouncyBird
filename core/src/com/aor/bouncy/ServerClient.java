@@ -14,6 +14,8 @@ public class ServerClient {
     private BufferedReader bufferedReader;
     private DataOutputStream dataOutputStream;
 
+    private boolean ready = false;
+
     private static int PORT = 6789;
 
 
@@ -44,5 +46,13 @@ public class ServerClient {
 
     public void setOUT_SENTENCE(String OUT_SENTENCE) {
         this.OUT_SENTENCE = OUT_SENTENCE;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
     }
 }

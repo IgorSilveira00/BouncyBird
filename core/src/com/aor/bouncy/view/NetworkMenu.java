@@ -53,9 +53,13 @@ public class NetworkMenu extends ScreenAdapter{
 
     private TextButton BACK_BUTTON;
 
+    private TextButton START_BUTTON;
+
     private TextField TEXT_AREA;
 
     private boolean firstTime = true;
+
+    private boolean ready = false;
 
     private static String receivedText;
 
@@ -81,12 +85,13 @@ public class NetworkMenu extends ScreenAdapter{
         BitmapFont font = new BitmapFont();
         Skin skin = new Skin();
         TextureAtlas textureAtlas = new TextureAtlas();
-        TextButton.TextButtonStyle buttonStyle1, buttonStyle2, buttonStyle3;
+        TextButton.TextButtonStyle buttonStyle1, buttonStyle2, buttonStyle3, buttonStyle4;
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
 
         buttonStyle1 = new TextButton.TextButtonStyle();
         buttonStyle2 = new TextButton.TextButtonStyle();
         buttonStyle3 = new TextButton.TextButtonStyle();
+        buttonStyle4 = new TextButton.TextButtonStyle();
 
         readTexture("host_up", "host_up.png", textureAtlas);
         readTexture("host_down", "host_down.png", textureAtlas);
@@ -100,6 +105,7 @@ public class NetworkMenu extends ScreenAdapter{
         buttonStyle1.font = font;
         buttonStyle2.font = font;
         buttonStyle3.font = font;
+        buttonStyle4.font = font;
         textFieldStyle.font = font;
         textFieldStyle.fontColor = Color.BLACK;
 
@@ -139,6 +145,15 @@ public class NetworkMenu extends ScreenAdapter{
         TEXT_AREA.setVisible(false);
         TEXT_AREA.setDisabled(true);
 
+        buttonStyle4.up = skin.getDrawable("join_up");
+        buttonStyle4.down = skin.getDrawable("join_down");
+        START_BUTTON = new TextButton("", buttonStyle4);
+        START_BUTTON.setPosition(HOST_BUTTON.getX(),
+                JOIN_BUTTON.getY() - START_BUTTON.getHeight());
+        stage.addActor(START_BUTTON);
+        START_BUTTON.setDisabled(true);
+        START_BUTTON.setVisible(false);
+
         addListeners();
     }
 
@@ -152,6 +167,8 @@ public class NetworkMenu extends ScreenAdapter{
                 MainMenuView.playClick();
                 disableButtons();
                 TEXT_AREA.setVisible(true);
+                START_BUTTON.setVisible(true);
+                START_BUTTON.setDisabled(false);
                 game.setIS_NET(true);
                 try {
                     game.setScreen(new GameView(game, true, true));
@@ -174,14 +191,17 @@ public class NetworkMenu extends ScreenAdapter{
 
                     @Override
                     public void canceled() {
+                        game.setScreen(new NetworkMenu(game));
                     }
                 };
                 Gdx.input.getTextInput(textInputListener, "Join a game", "", "Enter the given code here...");
                 game.setIS_NET(true);
-                try {
-                    game.setScreen(new GameView(game, true, false));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (ready) {
+                    try {
+                        game.setScreen(new GameView(game, true, false));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -191,6 +211,14 @@ public class NetworkMenu extends ScreenAdapter{
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
                 game.setScreen(new MainMenuView(game, false));
+            }
+        });
+
+        START_BUTTON.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MainMenuView.playClick();
+                ready = true;
             }
         });
 
