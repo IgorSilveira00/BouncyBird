@@ -33,7 +33,7 @@ import static com.aor.bouncy.controller.GameController.*;
  * A view representing the game screen. Draws all the other views and
  * controls the camera.
  */
-public class GameView extends ScreenAdapter implements InputProcessor{
+public class GameView extends ScreenAdapter{
     //test
     static int t1 = 60, t2 = 30, t3 = 50;
 
@@ -293,7 +293,7 @@ public class GameView extends ScreenAdapter implements InputProcessor{
                 }
             }
         }
-        if (TWO_PLAYERS)
+        if (TWO_PLAYERS && !END && !IS_RUNNING)
             drawLifes();
 
         drawEntities();
@@ -440,6 +440,32 @@ public class GameView extends ScreenAdapter implements InputProcessor{
             MainMenuView.playClick();
             game.setScreen(new MainMenuView(game, false));
         }
+        if (Gdx.input.justTouched()){
+            if (TWO_PLAYERS) {
+                if (Gdx.input.getY() > Gdx.graphics.getHeight() / 2f) {
+                    if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
+                        playJump();
+                        GameController.getInstance().jump(1);
+                    }
+                    READY_PLAYER_TWO = true;
+                }
+                else if (Gdx.input.getY() < Gdx.graphics.getHeight() / 2f) {
+                    if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
+                        playJump();
+                        GameController.getInstance().jump(0);
+                    }
+                    READY_PLAYER_ONE = true;
+                }
+            }
+            else {
+                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
+                    playJump();
+                    GameController.getInstance().jump(0);
+                }
+                READY_PLAYER_ONE = true;
+            }
+        }
+
     }
 
     /**
@@ -525,68 +551,5 @@ public class GameView extends ScreenAdapter implements InputProcessor{
         Texture background = game.getAssetManager().get("background.png", Texture.class);
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         game.getBatch().draw(background, 0, 0, 0, 0, (int)(ROOM_WIDTH / PIXEL_TO_METER), (int) (ROOM_HEIGHT / PIXEL_TO_METER));
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (TWO_PLAYERS) {
-            if (screenX < Gdx.graphics.getHeight() / 2f) {
-                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                    playJump();
-                    GameController.getInstance().jump(1);
-                }
-                READY_PLAYER_TWO = true;
-            }
-            else if (screenX > Gdx.graphics.getHeight() / 2f) {
-                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                    playJump();
-                    GameController.getInstance().jump(0);
-                }
-                READY_PLAYER_ONE = true;
-            }
-        }
-        else {
-            if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                playJump();
-                GameController.getInstance().jump(0);
-            }
-            READY_PLAYER_ONE = true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
     }
 }
