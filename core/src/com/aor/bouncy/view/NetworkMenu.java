@@ -98,13 +98,13 @@ public class NetworkMenu extends ScreenAdapter{
         buttonStyle3 = new TextButton.TextButtonStyle();
         buttonStyle4 = new TextButton.TextButtonStyle();
 
-        readTexture("host_up", "host_up.png", textureAtlas);
-        readTexture("host_down", "host_down.png", textureAtlas);
-        readTexture("join_up", "join_up.png", textureAtlas);
-        readTexture("join_down", "join_down.png", textureAtlas);
-        readTexture("back-up", "back-up.png", textureAtlas);
-        readTexture("back-down", "back-down.png", textureAtlas);
-        readTexture("text_field", "text_field.png", textureAtlas);
+        MainMenuView.readTexture("host_up", "host_up.png", textureAtlas);
+        MainMenuView.readTexture("host_down", "host_down.png", textureAtlas);
+        MainMenuView.readTexture("join_up", "join_up.png", textureAtlas);
+        MainMenuView.readTexture("join_down", "join_down.png", textureAtlas);
+        MainMenuView.readTexture("back-up", "back-up.png", textureAtlas);
+        MainMenuView.readTexture("back-down", "back-down.png", textureAtlas);
+        MainMenuView.readTexture("text_field", "text_field.png", textureAtlas);
         skin.addRegions(textureAtlas);
 
         buttonStyle1.font = font;
@@ -182,7 +182,7 @@ public class NetworkMenu extends ScreenAdapter{
                 }
                 if (ready) {
                     try {
-                        game.setScreen(new GameView(game, true, true, serverClient));
+                        game.setScreen(new GameView(game, true));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -216,7 +216,7 @@ public class NetworkMenu extends ScreenAdapter{
                 }
                 if (readyJoin) {
                 try {
-                    game.setScreen(new GameView(game, true, false, serverClient));
+                    game.setScreen(new GameView(game, true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -249,18 +249,18 @@ public class NetworkMenu extends ScreenAdapter{
         JOIN_BUTTON.setVisible(false);
         JOIN_BUTTON.setDisabled(true);
     }
-
-    /**
+/*
+    *//**
      * Adds TextureRegions to a given TextureAtlas
      * @param regionName the name for the atlas' region.
      * @param assetName the name of the asset to load.
      * @param textureAtlas the TextureAtlas to add the TextureRegion to.
-     */
+     *//*
     private void readTexture(String regionName, String assetName, TextureAtlas textureAtlas) {
         Texture toLoad = game.getAssetManager().get(assetName);
         TextureRegion textureRegion = new TextureRegion(toLoad, toLoad.getWidth(), toLoad.getHeight());
         textureAtlas.addRegion(regionName, textureRegion);
-    }
+    }*/
 
     @Override
     public void resize(int width, int height) {

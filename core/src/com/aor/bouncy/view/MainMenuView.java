@@ -161,17 +161,10 @@ public class MainMenuView extends ScreenAdapter {
         EXIT_BUTTON = new TextButton("", b3);
         EXIT_BUTTON.setPosition(SETTINGS_BUTTON.getX(), SETTINGS_BUTTON.getY() - EXIT_BUTTON.getHeight());
 
-        addActors();
-        addListeners();
-    }
-
-    /**
-     * Adds the buttons to the MainMenuView's stage.
-     */
-    private void addActors() {
         stage.addActor(PLAY_BUTTON);
         stage.addActor(SETTINGS_BUTTON);
         stage.addActor(EXIT_BUTTON);
+        addListeners();
     }
 
     /**
@@ -224,7 +217,7 @@ public class MainMenuView extends ScreenAdapter {
      * @param assetName the name of the asset to load.
      * @param textureAtlas the TextureAtlas to add the TextureRegion to.
      */
-    private void readTexture(String regionName, String assetName, TextureAtlas textureAtlas) {
+    public static void readTexture(String regionName, String assetName, TextureAtlas textureAtlas) {
         Texture toLoad = game.getAssetManager().get(assetName);
         TextureRegion textureRegion = new TextureRegion(toLoad, toLoad.getWidth(), toLoad.getHeight());
         textureAtlas.addRegion(regionName, textureRegion);
@@ -327,7 +320,6 @@ public class MainMenuView extends ScreenAdapter {
     public void render(float delta) {
         game.getBatch().setProjectionMatrix(camera.combined);
 
-//        Gdx.gl.glClearColor( 103/255f, 69/255f, 117/255f, 1 );
         Gdx.gl.glClearColor( RED/255f, GREEN/255f, BLUE/255f, 1 );
 
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
