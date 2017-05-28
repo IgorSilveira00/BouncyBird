@@ -1,9 +1,7 @@
 package com.aor.bouncy.view;
 
 import com.aor.bouncy.MyBouncyBird;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import static com.aor.bouncy.controller.GameController.ROOM_HEIGHT;
 import static com.aor.bouncy.controller.GameController.ROOM_WIDTH;
 
-public class SettingsMenuView extends ScreenAdapter{
+public class SettingsMenuView extends ScreenAdapter implements ApplicationListener, InputProcessor{
     //test
     static int RED = 20, GREEN = 50, BLUE = 200;
 
@@ -66,6 +64,8 @@ public class SettingsMenuView extends ScreenAdapter{
         this.game = game;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+
+        Gdx.input.setCatchBackKey(true);
 
         loadUI();
 
@@ -190,12 +190,21 @@ public class SettingsMenuView extends ScreenAdapter{
     }
 
     @Override
+    public void create() {
+    }
+
+    @Override
     public void resize(int width, int height) {
         super.resize(width, height);
 
         if (!firstTime)
             game.setScreen(new SettingsMenuView(game));
         firstTime = false;
+    }
+
+    @Override
+    public void render() {
+
     }
 
     /**
@@ -242,17 +251,52 @@ public class SettingsMenuView extends ScreenAdapter{
     private void drawEntities() {
     }
 
-    /**
-     * Draws the background
-     */
-    private void drawBackground() {
-        Texture background = game.getAssetManager().get("background.png", Texture.class);
-        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        game.getBatch().draw(background, 0, 0, 0, 0, (int)(ROOM_WIDTH / PIXEL_TO_METER), (int) (ROOM_HEIGHT / PIXEL_TO_METER));
-    }
-
     public OrthographicCamera getCamera() {
 
         return camera;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.BACK) {
+            MainMenuView.playClick();
+            game.setScreen(new MainMenuView(game, false));
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

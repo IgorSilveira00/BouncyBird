@@ -142,6 +142,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         InputMultiplexer multiplexer = new InputMultiplexer(this, stage);
         Gdx.input.setInputProcessor(multiplexer);
 
+
+        Gdx.input.setCatchBackKey(true);
+
         camera = createCamera();
         //menuView.setCameras(debugRenderer, debugCamera);
 
@@ -201,8 +204,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         EXIT_BUTTON.setPosition(RESTART_BUTTON.getX(), RESTART_BUTTON.getY() - EXIT_BUTTON.getHeight());
 
         stage.addActor(RESUME_BUTTON);
-        stage.addActor(RESUME_BUTTON);
+        stage.addActor(RESTART_BUTTON);
         stage.addActor(EXIT_BUTTON);
+        stage.setDebugAll(true);
 
 
         addListeners();
@@ -214,7 +218,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
                 disableButtons();
-                IS_RUNNING = true;
+                passedTime = 4;
             }
         });
 
@@ -245,7 +249,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         RESTART_BUTTON.setVisible(false);
         EXIT_BUTTON.setDisabled(true);
         EXIT_BUTTON.setVisible(false);
-        IS_RUNNING = true;
+        //IS_RUNNING = true;
         IS_PAUSED = false;
     }
 
@@ -255,7 +259,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         RESUME_BUTTON.setDisabled(false);
         RESUME_BUTTON.setVisible(true);
         RESTART_BUTTON.setDisabled(false);
-        RESUME_BUTTON.setVisible(true);
+        RESTART_BUTTON.setVisible(true);
         EXIT_BUTTON.setDisabled(false);
         EXIT_BUTTON.setVisible(true);
     }
@@ -516,17 +520,18 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 playJump();
                 GameController.getInstance().jump(0);
             }
-                READY_PLAYER_ONE = true;
+            READY_PLAYER_ONE = true;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
             if (READY_PLAYER_TWO && READY_PLAYER_ONE && IS_RUNNING) {
                 playJump();
                 GameController.getInstance().jump(1);
             }
-                READY_PLAYER_TWO = true;
+            READY_PLAYER_TWO = true;
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && IS_RUNNING) {
             MainMenuView.playClick();
+            GameModel.getInstance().getBird().get(0).setFlying(false);
             enableButtons();
         }
         if (!IS_PAUSED) {
@@ -648,7 +653,6 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
     @Override
     public void create() {
-
     }
 
     @Override
@@ -658,13 +662,18 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.BACK)
-            enableButtons();
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.BACK) {
+            if (!END) {
+                MainMenuView.playClick();
+                GameModel.getInstance().getBird().get(0).setFlying(false);
+                enableButtons();
+            }
+        }
         return false;
     }
 

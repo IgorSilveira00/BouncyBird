@@ -3,9 +3,7 @@ package com.aor.bouncy.view;
 import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.GameModel;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -31,7 +29,7 @@ import static com.aor.bouncy.controller.GameController.*;
 /**
  * A view representing the game main menu.
  */
-public class PlayMenuView extends ScreenAdapter {
+public class PlayMenuView extends ScreenAdapter implements ApplicationListener, InputProcessor{
     //test
     static int RED = 20, GREEN = 100, BLUE = 200;
 
@@ -75,6 +73,7 @@ public class PlayMenuView extends ScreenAdapter {
         this.game = game;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+        Gdx.input.setCatchBackKey(true);
 
         loadButtons();
 
@@ -146,12 +145,21 @@ public class PlayMenuView extends ScreenAdapter {
     }
 
     @Override
+    public void create() {
+    }
+
+    @Override
     public void resize(int width, int height) {
         super.resize(width, height);
 
         if (!firstTime)
             game.setScreen(new PlayMenuView(game));
         firstTime = false;
+    }
+
+    @Override
+    public void render() {
+
     }
 
     /**
@@ -281,5 +289,49 @@ public class PlayMenuView extends ScreenAdapter {
     public OrthographicCamera getCamera() {
 
         return camera;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.BACK) {
+            MainMenuView.playClick();
+            game.setScreen(new MainMenuView(game, false));
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }
