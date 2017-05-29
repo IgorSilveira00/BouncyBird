@@ -15,7 +15,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  */
 public class EdgeView extends EntityView {
     /**
-     * The texture used for the bird not flying
+     * The texture used for the edge.
      */
     private TextureRegion textureRegion;
 
@@ -44,7 +44,7 @@ public class EdgeView extends EntityView {
     }
 
     /**
-     * Creates the texture used for the edge
+     * Creates the texture used for the edge.
      *
      * @param game the game this view belongs to. Needed to access the
      *             asset manager to get textures.
@@ -59,7 +59,7 @@ public class EdgeView extends EntityView {
     /**
      * Updates this edge's model.
      *
-     * @param model the model used to update this view
+     * @param model the model used to update this view.
      */
     @Override
     public void update(EntityModel model) {

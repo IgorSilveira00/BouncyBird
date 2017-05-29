@@ -39,11 +39,6 @@ public class GameController implements ContactListener{
     private static float BIRD_X_SPEED = 0.3f;
 
     /**
-     * The speed of the spikes.
-     */
-    private static final float SPIKE_SPEED = 20f;
-
-    /**
      * Boolean to check if as inverted speed already.
      */
     private boolean hasTurned = false;
@@ -83,26 +78,61 @@ public class GameController implements ContactListener{
      */
     public static final float corrector = 1f;
 
+    /**
+     * Variable used to compute the amount of spikes to be grown.
+     */
     private int DIFFICULTY_COUNTER = 1;
 
+    /**
+     * Variable used to tell if the already grown spikes are ready for removal.
+     */
     private boolean readyToRemove = false;
 
+    /**
+     * Used by the GameView to tell if the game
+     * as ended upon spike collision.
+     */
     private boolean END = false;
 
+    /**
+     * Prevents multiple spikes collision at a time.
+     */
     private boolean hasDecreasedLife = false;
 
+    /**
+     * Tells if the spike are ready to be grown using the bird's position.
+     */
     private boolean readyToGrow = true;
 
+    /**
+     * Amount used to make the bird jump.
+     */
     private final float UPWARD_SPEED = 0.6f;
+
+    /**
+     * Amount used to make the bird fall.
+     */
     private final float GRAVITY = -0.03f;
+
+    /**
+     * Vertical speed added for each bird, for movement.
+     */
     private float speedBirdOne = 0, speedBirdTwo = 0;
+
+    /**
+     * Boolean used to check if it is time to jump.
+     */
     private boolean isJump = false;
+
+    /**
+     * Index of the bird who is to perform the jumping action.
+     */
     private int birdToJumpIndex = 0;
 
     /**
      * Time between bonus spawns.
      */
-    private float TIME_BETWEEN_BONUS = 12;
+    private float TIME_BETWEEN_BONUS = 10;
 
     /**
      * Time left until next bonus pops up.
@@ -159,21 +189,22 @@ public class GameController implements ContactListener{
      * @param delta The size of this physics step in seconds.
      */
     public boolean update(float delta, ServerClient serverClient) {
+
+        //Bonus is only spawn in one player game mode.
         if (!GameView.isTWO_PLAYERS())
             generateBonus(delta);
 
         GameModel.getInstance().update(delta);
 
-        //TODO
-
+        //Prevents spikes from growing while the birds are in range of the motion.
         if (BIRD_X_SPEED > 0) {
-            if (birdBodies.get(0).getX() > GameView.VIEWPORT_WIDTH / 2f)
+            if (birdBodies.get(0).getX() > GameView.VIEWPORT_WIDTH / 4f)
                 readyToGrow = true;
             else
                 readyToGrow = false;
         }
         else {
-            if (birdBodies.get(0).getX() < GameView.VIEWPORT_WIDTH - GameView.VIEWPORT_WIDTH / 2f)
+            if (birdBodies.get(0).getX() < GameView.VIEWPORT_WIDTH - GameView.VIEWPORT_WIDTH / 4f)
                 readyToGrow = true;
             else
                 readyToGrow = false;
@@ -200,14 +231,11 @@ public class GameController implements ContactListener{
 
         processJump();
 
-        if (serverClient == null) {
-            moveBodies("0;" + Float.toString(birdBodies.get(0).getX() + BIRD_X_SPEED) + ";" + Float.toString(birdBodies.get(0).getY()));
+        moveBodies("0;" + Float.toString(birdBodies.get(0).getX() + BIRD_X_SPEED) + ";" + Float.toString(birdBodies.get(0).getY()));
 
-            if (birdBodies.size() > 1)
-                moveBodies("1;" + Float.toString(birdBodies.get(1).getX() - BIRD_X_SPEED) + ";" + Float.toString(birdBodies.get(1).getY()));
-        } else {
-            moveBodies(serverClient.getIN_SENTENCE());
-        }
+        if (birdBodies.size() > 1)
+            moveBodies("1;" + Float.toString(birdBodies.get(1).getX() - BIRD_X_SPEED) + ";" + Float.toString(birdBodies.get(1).getY()));
+
 
         if (readyToRemove && !world.isLocked())
             degrowSpikes();
@@ -219,6 +247,10 @@ public class GameController implements ContactListener{
         return END;
     }
 
+    /**
+     * Computes the amount of spikes to be grown.
+     * @return the amount of spikes to be grown.
+     */
     private int processAmount() {
         int res = 0;
         if (DIFFICULTY_COUNTER % 2 == 0)
@@ -243,13 +275,17 @@ public class GameController implements ContactListener{
             world.getBodies(bodies);
 
             float multiplier = 1;
+
+            //If the bird if moving left the amount of x increment is simetric
             if (BIRD_X_SPEED > 0)
                 multiplier *= -1;
 
             bodiesToMove.clear();
             bodiesToRemove.clear();
+
             getCorrectSpikeBodies();
 
+            //Chooses which spikes will be grown.
             int[] spikesIndexes = Utilities.getDistinctRandomNumbers(amount, GameModel.AMOUNT_SPIKES - 2);
 
             if (GameView.isTWO_PLAYERS()) {
@@ -274,6 +310,10 @@ public class GameController implements ContactListener{
         }
     }
 
+    /**
+     * Moves the bodies. (is using a string because it was to be implemented with servers).
+     * @param positions string containing all the information to perform the move.
+     */
     public void moveBodies(String positions) {
         int which;
         float x, y;
@@ -286,7 +326,7 @@ public class GameController implements ContactListener{
     }
 
     /**
-     * Sets up the array of bodies to be moved.
+     * Sets up the array of bodies that can be moved.
      */
     private void getCorrectSpikeBodies() {
         Array<Body> bodies = new Array<Body>();
@@ -420,7 +460,11 @@ public class GameController implements ContactListener{
     public void postSolve(Contact contact, ContactImpulse impulse) {
     }
 
-    //TODO game over
+    /**
+     * Handles collision between bird and spike.
+     * @param bodyA spike which the bird has collided with.
+     * @param bodyB bird that has collided.
+     */
     private void birdSpikeCollision(Body bodyA, Body bodyB) {
         ((SpikeModel) bodyA.getUserData()).setNormalTexture(false);
         if (!hasDecreasedLife) {
@@ -495,15 +539,10 @@ public class GameController implements ContactListener{
         }
     }
 
+    /**
+     * Used to reset.
+     */
     public static void dispose() {
         instance = null;
-    }
-
-    public void reset() {
-        ((BirdModel) birdBodies.get(0).getUserData()).setFlying(false);
-        ((BirdModel) birdBodies.get(0).getUserData()).setHeadRight(true);
-
-        ((BirdModel) birdBodies.get(1).getUserData()).setFlying(false);
-        ((BirdModel) birdBodies.get(1).getUserData()).setHeadRight(false);
     }
 }

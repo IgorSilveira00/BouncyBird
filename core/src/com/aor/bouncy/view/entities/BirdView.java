@@ -29,10 +29,19 @@ public class BirdView extends EntityView {
      */
     private Animation<TextureRegion> flyingAnimation2;
 
-    private  boolean flying;
+    /**
+     * Is the bird currently flying.
+     */
+    private boolean flying;
 
+    /**
+     * Is the bird heading right.
+     */
     private boolean headRight;
 
+    /**
+     * Is the bird the BLUE player.
+     */
     private boolean isSecond = false;
 
     /**

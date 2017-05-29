@@ -1,13 +1,14 @@
 package com.aor.bouncy.model.entities;
 
 /**
- * An abstract model representating an entity belonging to a game's model.
+ * An abstract model representing an entity belonging to a game's model.
  */
 public class EdgeModel extends EntityModel {
     /**
-     * Creates a new bird model in a certain position.
-     * @param x The x-coordinate of this bird in meters.
-     * @param y The y-coordinate of this bird in meters.
+     * Creates a new edge model in a certain position.
+     * @param x The x-coordinate of this edge in meters.
+     * @param y The y-coordinate of this edge in meters.
+     * @param angle The angle of this edge in radians.
      */
     public EdgeModel(float x, float y, float angle) {
         super(x, y, angle);

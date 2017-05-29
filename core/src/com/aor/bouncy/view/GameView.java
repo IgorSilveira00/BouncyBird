@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -26,8 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.aor.bouncy.controller.GameController.*;
@@ -37,9 +34,6 @@ import static com.aor.bouncy.controller.GameController.*;
  * controls the camera.
  */
 public class GameView extends ScreenAdapter implements InputProcessor, ApplicationListener {
-    //test
-    static int t1 = 60, t2 = 30, t3 = 50;
-
     /**
      * Boolean that decides if players are ready and controller has to work physics.
      */
@@ -146,7 +140,6 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         Gdx.input.setCatchBackKey(true);
 
         camera = createCamera();
-        //menuView.setCameras(debugRenderer, debugCamera);
 
         if (!TWO_PLAYERS) {
             createLabels();
@@ -342,7 +335,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
         game.getBatch().setProjectionMatrix(camera.combined);
 
-        Gdx.gl.glClearColor( t1/255f, t2/255f, t3/255f, 1 );
+        Gdx.gl.glClearColor( 0/255f, 0/255f, 0/255f, 1 );
 
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
 
@@ -384,6 +377,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                     else {
                         GameModel.getInstance().dispose();
                         GameController.getInstance().dispose();
+                        game.setScreen(new GameView(game, true));
                     }
                 }
                 else {
@@ -395,7 +389,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
             }
         }
         if (TWO_PLAYERS && !END && !IS_RUNNING)
-            drawLifes();
+            drawLives();
 
         drawEntities();
 
@@ -623,14 +617,14 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         }
     }
 
-    private void drawLifes() {
-        Texture t1 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(0).getNUMBER_LIFES() + "_p1.png", Texture.class);
+    private void drawLives() {
+        Texture t1 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(0).getNUMBER_LIVES() + "_p1.png", Texture.class);
         Image i1 = new Image(t1);
         i1.scaleBy(2);
         i1.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 8f,
                 VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f - VIEWPORT_HEIGHT / PIXEL_TO_METER / 6f);
 
-        Texture t2 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(1).getNUMBER_LIFES() + "_p2.png", Texture.class);
+        Texture t2 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(1).getNUMBER_LIVES() + "_p2.png", Texture.class);
         Image i2 = new Image(t2);
         i2.scaleBy(2);
         i2.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 2f + VIEWPORT_WIDTH / PIXEL_TO_METER / 6f,

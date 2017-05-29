@@ -1,7 +1,7 @@
 package com.aor.bouncy.model.entities;
 
 /**
- * An abstract model representating an entity belonging to a game's model.
+ * An abstract model representing an entity belonging to a game's model.
  */
 public abstract class EntityModel {
     public enum ModelType {RIGHT_SPIKE, LEFT_SPIKE, SPIKE, BIRD, BONUS, EDGE, LIFE};

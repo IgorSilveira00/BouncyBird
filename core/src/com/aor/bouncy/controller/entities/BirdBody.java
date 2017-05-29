@@ -21,10 +21,10 @@ public class BirdBody extends EntityBody{
         float density = 0.5f, friction = 0.2f, restitution = 0f;
         int width = 100, height = 100;
 
-        // Upper triangle
+        // Upper concave shape
         createFixture(body, new float[]{12,50, 21,28, 42,15, 60,16, 79,28, 88,50}, width, height, density, friction, restitution, BIRD_BODY, (short) ( SPIKE_BODY | BONUS_BODY | EDGE_BODY));
 
-        // Bottom triangle
+        // Bottom concave shape
         createFixture(body, new float[]{88,50, 79,75, 58,87, 39,86, 19,73, 12,50 }, width, height, density, friction, restitution, BIRD_BODY, (short) ( SPIKE_BODY | BONUS_BODY | EDGE_BODY));
     }
 }

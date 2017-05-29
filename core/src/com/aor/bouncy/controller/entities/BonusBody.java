@@ -21,10 +21,10 @@ public class BonusBody extends EntityBody{
         float density = 0.0f, friction = 0.8f, restitution = 0.5f;
         int width = 100, height = 100;
 
-        // Upper triangle
+        // Upper shape
         createFixture(body, new float[]{1,15, 37,0, 67,17, 100,92}, width, height, density, friction, restitution, BONUS_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
 
-        // Bottom triangle
+        // Bottom shape
         createFixture(body, new float[]{100,92, 25,92, 1,15}, width, height, density, friction, restitution, BONUS_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
     }
 }

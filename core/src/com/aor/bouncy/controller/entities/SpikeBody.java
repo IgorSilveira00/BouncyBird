@@ -21,7 +21,7 @@ public class SpikeBody extends EntityBody{
         float density = 0.0f, friction = 0.8f, restitution = 0.5f;
         int width = 100, height = 100;
 
-        // Upper triangle
+        // Triangular spike's shape
         createFixture(body, new float[]{0,16, 99,49, 0,82}, width, height, density, friction, restitution, SPIKE_BODY, (short) (BIRD_BODY | SPIKE_BODY | BONUS_BODY | EDGE_BODY));
      }
 }

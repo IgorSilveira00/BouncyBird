@@ -5,7 +5,6 @@ import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.entities.*;
 import com.aor.bouncy.view.GameView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,20 +88,22 @@ public class GameModel {
        birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
                 GameView.VIEWPORT_HEIGHT / 2,
                 0));
-       birds.get(0).setNUMBER_LIFES(MyBouncyBird.getPLAYER_ONE_LIFES());
+       birds.get(0).setNUMBER_LIVES(MyBouncyBird.getPLAYER_ONE_LIFES());
        birds.get(0).setHeadRight(true);
 
+       //If the game is two players mode, a new bird is created.
         if (GameView.isTWO_PLAYERS()) {
             birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
                     GameView.VIEWPORT_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER,
                     0));
-            birds.get(1).setNUMBER_LIFES(MyBouncyBird.getPLAYER_TWO_LIFES());
+            birds.get(1).setNUMBER_LIVES(MyBouncyBird.getPLAYER_TWO_LIFES());
             birds.get(1).setSecond(true);
         }
 
         for (int i = 0; i < birds.size(); i++)
             birds.get(i).setFlying(false);
 
+        //Floor and ceiling spikes.
         for (int i = 0; i < AMOUNT_SPIKES; i++){
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
                     SPIKE_HEIGHT - GameController.corrector,
@@ -115,6 +116,7 @@ public class GameModel {
                     EntityModel.ModelType.SPIKE));
         }
 
+        //Right and left walls spikes.
         for (int i = 0; i < AMOUNT_SPIKES - 2 ; i++) {
             right_wall_spikes.add(new SpikeModel(GameView.VIEWPORT_WIDTH + 1.2f + GameController.corrector,
                     SPIKE_HEIGHT + SPIKE_HEIGHT * i,
@@ -209,31 +211,36 @@ public class GameModel {
         }
     }
 
+    /**
+     * Update the bodies.
+     * @param delta time passed in seconds since last update.
+     */
     public void update(float delta) {
         if (bonus != null)
             if (bonus.decreaseTimeToLive(delta))
                 bonus.setFlaggedForRemoval(true);
     }
 
+    /**
+     * Used to reset the class.
+     */
     public static void dispose() {
         instance = null;
     }
 
+    /**
+     * Returns the current game score.
+     * @return the current game score.
+     *
+     */
     public int getGAME_SCORE() {
         return GAME_SCORE;
     }
 
+    /**
+     * Updates the current game score.
+     */
     public void incScore() {
         GAME_SCORE++;
-    }
-
-    public void reset() {
-        birds.get(0).setPosition(GameView.VIEWPORT_WIDTH / 2,
-                GameView.VIEWPORT_HEIGHT / 2);
-        birds.get(0).setHeadRight(true);
-
-        birds.get(1).setPosition(GameView.VIEWPORT_WIDTH / 2,
-                GameView.VIEWPORT_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER);
-        birds.get(1).setSecond(true);
     }
 }

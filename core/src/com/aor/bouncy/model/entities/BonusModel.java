@@ -9,12 +9,14 @@ import static com.badlogic.gdx.math.MathUtils.random;
  * A model representing the bonus.
  */
 public class BonusModel extends EntityModel{
+    /**
+     * Current time left for the model to live.
+     */
     public static float timeToLive;
 
     /**
      * Constructs a bonus model belonging to a game's model.
-     * @param x The x-coordinate of this bonus in meters.
-     * @param y The y-coordinate of this bonus in meters.
+     * @param SPIKE_HEIGHT the game's spike's height.
      */
     public BonusModel(float SPIKE_HEIGHT) {
         super(random(SPIKE_HEIGHT, GameView.VIEWPORT_WIDTH - 2 * SPIKE_HEIGHT),
