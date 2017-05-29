@@ -68,7 +68,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
     /**
      * Used to debug the position of the physics fixtures
      */
-    private static final boolean DEBUG_PHYSICS = true;
+    private static final boolean DEBUG_PHYSICS = false;
 
     /**
      * How much meters does a pixel represent
@@ -206,8 +206,6 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         stage.addActor(RESUME_BUTTON);
         stage.addActor(RESTART_BUTTON);
         stage.addActor(EXIT_BUTTON);
-        stage.setDebugAll(true);
-
 
         addListeners();
     }
