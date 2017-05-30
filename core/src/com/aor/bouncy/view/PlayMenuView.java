@@ -4,35 +4,22 @@ import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.GameModel;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-import java.io.IOException;
-
-import static com.aor.bouncy.controller.GameController.*;
-
 /**
  * A view representing the game main menu.
  */
-public class PlayMenuView extends ScreenAdapter implements ApplicationListener, InputProcessor{
-    //test
-    static int RED = 20, GREEN = 100, BLUE = 200;
-
+public class PlayMenuView extends ScreenAdapter implements ApplicationListener, InputProcessor {
     /**
      * How much meters does a pixel represent
      */
@@ -54,16 +41,35 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
      */
     private final OrthographicCamera camera;
 
+    /**
+     * Stage where all buttons will be drawn.
+     */
     private Stage stage;
 
+    /**
+     * Object of the TextButton class representing the 1P button.
+     */
     private TextButton ONE_PLAY_BUTTON;
 
+    /**
+     * Object of the TextButton class representing the 2P button.
+     */
     private TextButton TWO_PLAY_BUTTON;
 
+    /**
+     * Object of the TextButton class representing the 2P Network button.
+     */
     private TextButton TWO_NET_BUTTON;
 
+    /**
+     * Object of the TextButton class representing the back button.
+     */
     private TextButton BACK_BUTTON;
-    private boolean firstTime = true;
+
+    /**
+     * Variable telling us if it is the first time running this instance.
+     */
+    private boolean FIRST_TIME = true;
 
     /**
      * Creates this screen.
@@ -72,6 +78,7 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
     public PlayMenuView(MyBouncyBird game) {
         this.game = game;
         stage = new Stage();
+
         Gdx.input.setInputProcessor(stage);
         Gdx.input.setCatchBackKey(true);
 
@@ -81,6 +88,9 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
         camera = createCamera();
     }
 
+    /**
+     * Initializes this view's buttons.
+     */
     private void loadButtons() {
         BitmapFont font = new BitmapFont();
         Skin skin = new Skin();
@@ -152,9 +162,9 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
     public void resize(int width, int height) {
         super.resize(width, height);
 
-        if (!firstTime)
+        if (!FIRST_TIME)
             game.setScreen(new PlayMenuView(game));
-        firstTime = false;
+        FIRST_TIME = false;
     }
 
     @Override
@@ -171,8 +181,8 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
 
-                GameController.dispose();
-                GameModel.dispose();
+                GameController.getInstance().dispose();
+                GameModel.getInstance().dispose();
 
                 game.setScreen(new GameView(game, false));
 
@@ -185,11 +195,11 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
 
-                GameController.dispose();
-                GameModel.dispose();
+                GameController.getInstance().dispose();
+                GameModel.getInstance().dispose();
 
-                MyBouncyBird.setPLAYER_ONE_LIFES(3);
-                MyBouncyBird.setPLAYER_TWO_LIFES(3);
+                MyBouncyBird.setPLAYER_ONE_LIVES(3);
+                MyBouncyBird.setPLAYER_TWO_LIVES(3);
 
                 game.setScreen(new GameView(game, true));
                 disableButtons();
@@ -201,8 +211,8 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
             public void changed(ChangeEvent event, Actor actor) {
                 MainMenuView.playClick();
 
-                GameController.dispose();
-                GameModel.dispose();
+                GameController.getInstance().dispose();
+                GameModel.getInstance().dispose();
 
                 game.setScreen(new NetworkMenu(game));
             }
@@ -217,6 +227,9 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
         });
     }
 
+    /**
+     * Disables and hides every button and unpauses the controller updates.
+     */
     private void disableButtons() {
         ONE_PLAY_BUTTON.setDisabled(true);
         TWO_PLAY_BUTTON.setDisabled(true);
@@ -224,6 +237,9 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
         BACK_BUTTON.setDisabled(true);
     }
 
+    /**
+     * Enables and activates every button and pauses the controller updates.
+     */
     private void enableButtons() {
         ONE_PLAY_BUTTON.setDisabled(false);
         TWO_PLAY_BUTTON.setDisabled(false);
@@ -267,8 +283,7 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
     public void render(float delta) {
         game.getBatch().setProjectionMatrix(camera.combined);
 
-//        Gdx.gl.glClearColor( 103/255f, 69/255f, 117/255f, 1 );
-        Gdx.gl.glClearColor( RED/255f, GREEN/255f, BLUE/255f, 1 );
+        Gdx.gl.glClearColor( 0/255f, 0/255f, 0/255f, 1 );
 
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
 
@@ -298,6 +313,7 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
 
     @Override
     public boolean keyUp(int keycode) {
+        //Catch the android back key.
         if (keycode == Input.Keys.BACK) {
             MainMenuView.playClick();
             game.setScreen(new MainMenuView(game, false));

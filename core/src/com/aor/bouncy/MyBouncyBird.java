@@ -13,12 +13,30 @@ public class MyBouncyBird extends Game {
 	private SpriteBatch batch;
 	private AssetManager assetManager;
 
+	/**
+	 * The game music.
+	 */
 	private Music BACKGROUND_MUSIC;
+
+	/**
+	 * Is the FX enable in the game.
+	 */
 	private static boolean FX_ENABLED = true;
+
+	/**
+	 * Is the music enabled in the game.
+	 */
 	private static boolean MUSIC_ENABLED = true;
 
-	private static int PLAYER_ONE_LIFES = 3;
-	private static int PLAYER_TWO_LIFES = 3;
+	/**
+	 * Number of lives of the RED player.
+	 */
+	private static int PLAYER_ONE_LIVES = 3;
+
+	/**
+	 * Number os lives of the BLUE player.
+	 */
+	private static int PLAYER_TWO_LIVES = 3;
 
 	private static boolean IS_NET = false;
 
@@ -34,18 +52,34 @@ public class MyBouncyBird extends Game {
 		startGame();
 	}
 
+	/**
+	 * Returns the value of the FX enabled flag.
+	 * @return true if FX are enabled, false otherwise.
+	 */
 	public boolean isFX_ENABLED() {
 		return FX_ENABLED;
 	}
 
+	/**
+	 * Sets the value of the FX enabled flag.
+	 * @param FX_ENABLED value to set the flag to.
+	 */
 	public void setFX_ENABLED(boolean FX_ENABLED) {
 		this.FX_ENABLED = FX_ENABLED;
 	}
 
+	/**
+	 * Returns the value of the Music enabled flag.
+	 * @return true if the background music is enabled, false otherwise.
+	 */
 	public static boolean isMusicEnabled() {
 		return MUSIC_ENABLED;
 	}
 
+	/**
+	 * Sets the value of the Music enabled flag.
+	 * @param musicEnabled value to set the flag to.
+	 */
 	public static void setMusicEnabled(boolean musicEnabled) {
 		MUSIC_ENABLED = musicEnabled;
 	}
@@ -66,10 +100,18 @@ public class MyBouncyBird extends Game {
 		assetManager.dispose();
 	}
 
+	/**
+	 * Sets the Music to be the game's background music.
+	 * @param BACKGROUND_MUSIC Music to set the background music to be.
+	 */
 	public void setBACKGROUND_MUSIC(Music BACKGROUND_MUSIC) {
 		this.BACKGROUND_MUSIC = BACKGROUND_MUSIC;
 	}
 
+	/**
+	 * Gets the game's Music.
+	 * @return the game's Music.
+	 */
 	public Music getBACKGROUND_MUSIC() {
 		return BACKGROUND_MUSIC;
 	}
@@ -92,27 +134,35 @@ public class MyBouncyBird extends Game {
 		return batch;
 	}
 
-	public static int getPLAYER_ONE_LIFES() {
-		return PLAYER_ONE_LIFES;
+	/**
+	 * Gets the current amount of the RED player lives.
+	 * @return the current amount of the RED player lives.
+	 */
+	public static int getPLAYER_ONE_LIVES() {
+		return PLAYER_ONE_LIVES;
 	}
 
-	public static void setPLAYER_ONE_LIFES(int PLAYER_ONE_LIFES) {
-		MyBouncyBird.PLAYER_ONE_LIFES = PLAYER_ONE_LIFES;
+	/**
+	 * Sets the current amount of the RED player's lives.
+	 * @param PLAYER_ONE_LIVES the amount to set the RED player's lives to.
+	 */
+	public static void setPLAYER_ONE_LIVES(int PLAYER_ONE_LIVES) {
+		MyBouncyBird.PLAYER_ONE_LIVES = PLAYER_ONE_LIVES;
 	}
 
-	public static int getPLAYER_TWO_LIFES() {
-		return PLAYER_TWO_LIFES;
+	/**
+	 * Gets the current amount of the BLUE player lives.
+	 * @return the current amount of the BLUE player lives.
+	 */
+	public static int getPLAYER_TWO_LIVES() {
+		return PLAYER_TWO_LIVES;
 	}
 
-	public static void setPLAYER_TWO_LIFES(int PLAYER_TWO_LIFES) {
-		MyBouncyBird.PLAYER_TWO_LIFES = PLAYER_TWO_LIFES;
-	}
-
-	public static boolean isIS_NET() {
-		return IS_NET;
-	}
-
-	public static void setIS_NET(boolean is_net) {
-		IS_NET = is_net;
+	/**
+	 * Sets the current amount of the BLUE player's lives.
+	 * @param PLAYER_TWO_LIVES the amount to set the BLUE player's lives to.
+	 */
+	public static void setPLAYER_TWO_LIVES(int PLAYER_TWO_LIVES) {
+		MyBouncyBird.PLAYER_TWO_LIVES = PLAYER_TWO_LIVES;
 	}
 }

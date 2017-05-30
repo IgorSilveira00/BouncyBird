@@ -1,7 +1,6 @@
 package com.aor.bouncy.controller;
 
 import com.aor.bouncy.MyBouncyBird;
-import com.aor.bouncy.ServerClient;
 import com.aor.bouncy.Utilities;
 import com.aor.bouncy.controller.entities.*;
 import com.aor.bouncy.model.GameModel;
@@ -56,7 +55,7 @@ public class GameController implements ContactListener{
     /**
      * The bird's body.
      */
-    private List<BirdBody> birdBodies = new ArrayList<BirdBody>();/**
+    private static List<BirdBody> birdBodies = new ArrayList<BirdBody>();/**
 
      /**
      * List of the bodies in the right wall.
@@ -140,9 +139,30 @@ public class GameController implements ContactListener{
     private float timeToNextBonus = TIME_BETWEEN_BONUS;
 
     /**
+     * Used by the GameView to when when the bird has hit the wall to play the FX.
+     */
+    private boolean toPlaySound = false;
+
+    /**
+     * Used to disable the vertical changes of the bird. (for testings purposes)
+     */
+    private boolean isJumpEnabled = true;
+
+    /**
+     * Used to disable game over. (for testing purposes)
+     */
+    private boolean isLosingEnabled = true;
+
+    /**
+     * Know when bonus colision happens. (for testing purposes)
+     */
+    private boolean bonusCollided = false;
+
+    /**
      * Creates a new GameController that controls the physics of a certain GameModel.
      */
-    private GameController() {
+    public GameController() {
+
         world = new World(new Vector2(0, 0), true);
 
         birdBodies.add(new BirdBody(world, GameModel.getInstance().getBird().get(0)));
@@ -188,7 +208,9 @@ public class GameController implements ContactListener{
      * Calculates the next physics step of duration delta (in seconds)
      * @param delta The size of this physics step in seconds.
      */
-    public boolean update(float delta, ServerClient serverClient) {
+    public boolean update(float delta) {
+        toPlaySound = false;
+        bonusCollided = false;
 
         //Bonus is only spawn in one player game mode.
         if (!GameView.isTWO_PLAYERS())
@@ -229,7 +251,8 @@ public class GameController implements ContactListener{
             ((EntityModel) body.getUserData()).setPosition(body.getPosition().x, body.getPosition().y);
         }
 
-        processJump();
+       if (isJumpEnabled)
+           processJump();
 
         moveBodies("0;" + Float.toString(birdBodies.get(0).getX() + BIRD_X_SPEED) + ";" + Float.toString(birdBodies.get(0).getY()));
 
@@ -245,6 +268,10 @@ public class GameController implements ContactListener{
             hasTurned = false;
 
         return END;
+    }
+
+    public boolean isToPlaySound() {
+        return toPlaySound;
     }
 
     /**
@@ -386,6 +413,38 @@ public class GameController implements ContactListener{
     }
 
     /**
+     * Sets the jumping enabled flag.
+     * @param jumpEnabled
+     */
+    public void setJumpEnabled(boolean jumpEnabled) {
+        isJumpEnabled = jumpEnabled;
+    }
+
+    /**
+     * Sets the losing enabled flag.
+     * @param losingEnabled
+     */
+    public void setLosingEnabled(boolean losingEnabled) {
+        isLosingEnabled = losingEnabled;
+    }
+
+    /**
+     * Used to detect bird's position for testing purposes.
+     * @return
+     */
+    public static float getBirdXSpeed() {
+        return BIRD_X_SPEED;
+    }
+
+    /**
+     * Used to know if bird has hit the bonus, for testing purposes.
+     * @return
+     */
+    public boolean isBonusCollided() {
+        return bonusCollided;
+    }
+
+    /**
      * Checks to see if the jump flag was activated and makes the bird jump.
      */
     private void processJump() {
@@ -469,12 +528,14 @@ public class GameController implements ContactListener{
         ((SpikeModel) bodyA.getUserData()).setNormalTexture(false);
         if (!hasDecreasedLife) {
             if (((BirdModel) bodyB.getUserData()).isSecond())
-                MyBouncyBird.setPLAYER_TWO_LIFES(MyBouncyBird.getPLAYER_TWO_LIFES() - 1);
+                MyBouncyBird.setPLAYER_TWO_LIVES(MyBouncyBird.getPLAYER_TWO_LIVES() - 1);
             else
-                MyBouncyBird.setPLAYER_ONE_LIFES(MyBouncyBird.getPLAYER_ONE_LIFES() - 1);
+                MyBouncyBird.setPLAYER_ONE_LIVES(MyBouncyBird.getPLAYER_ONE_LIVES() - 1);
             hasDecreasedLife = true;
         }
-        END = true;
+
+        if (isLosingEnabled)
+            END = true;
     }
 
     /**
@@ -485,6 +546,7 @@ public class GameController implements ContactListener{
     private void bonusCollision(Body bonusBody) {
         ((BonusModel) bonusBody.getUserData()).setFlaggedForRemoval(true);
         GameModel.getInstance().incScore();
+        bonusCollided = true;
     }
 
     /**
@@ -500,7 +562,7 @@ public class GameController implements ContactListener{
 
             GameModel.getInstance().incScore();
             hasTurned = true;
-            GameView.playHit();
+            toPlaySound = true;
             DIFFICULTY_COUNTER++;
         }
         readyToRemove = true;
@@ -542,7 +604,16 @@ public class GameController implements ContactListener{
     /**
      * Used to reset.
      */
-    public static void dispose() {
+    public void dispose() {
+        birdBodies.clear();
         instance = null;
+    }
+
+    /**
+     * Gets the list of the bird bodies in game.
+     * @return a list containg the bird bodies.
+     */
+    public static List<BirdBody> getBirdBodies() {
+        return birdBodies;
     }
 }

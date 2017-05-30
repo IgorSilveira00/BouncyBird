@@ -25,6 +25,14 @@ public class BonusModel extends EntityModel{
     }
 
     /**
+     * Constructs a bonus model belonging to a game's model.
+     * on a specific location (for testing purposes)
+     */
+    public BonusModel(float x, float y) {
+        super(x, y,0);
+    }
+
+    /**
      * Decreases the bonus's time to live by delta seconds
      * @param delta
      * @return

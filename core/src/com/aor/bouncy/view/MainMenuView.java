@@ -1,11 +1,7 @@
 package com.aor.bouncy.view;
 
 import com.aor.bouncy.MyBouncyBird;
-import com.aor.bouncy.Utilities;
-import com.aor.bouncy.controller.GameController;
-import com.aor.bouncy.model.GameModel;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -15,15 +11,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-
-import java.util.ArrayList;
 
 import static com.aor.bouncy.controller.GameController.*;
 
@@ -32,15 +26,10 @@ import static com.aor.bouncy.controller.GameController.*;
  * controls the camera.
  */
 public class MainMenuView extends ScreenAdapter {
-    //test
-    static int RED = 20, GREEN = 100, BLUE = 200;
-
-    private int CHECK  = 1;
-
     /**
      * Used to debug the position of the physics fixtures
      */
-    private static final boolean DEBUG_PHYSICS = true;
+    private static final boolean DEBUG_PHYSICS = false;
 
     /**
      * How much meters does a pixel represent
@@ -63,6 +52,9 @@ public class MainMenuView extends ScreenAdapter {
      */
     private final OrthographicCamera camera;
 
+    /**
+     * Stage where all buttons will be drawn.
+     */
     private Stage stage;
 
     /**
@@ -76,13 +68,29 @@ public class MainMenuView extends ScreenAdapter {
      */
     private Matrix4 debugCamera;
 
+    /**
+     * Object of the TextButton class representing the play button.
+     */
     private TextButton PLAY_BUTTON;
 
+    /**
+     * Object of the TextButton class representing the settings button.
+     */
     private TextButton SETTINGS_BUTTON;
 
+    /**
+     * Object of the TextButton class representing the exit button.
+     */
     private TextButton EXIT_BUTTON;
 
+    /**
+     * Object of the Sound class for the mouse click effect.
+     */
     private static Sound MOUSE_CLICK;
+
+    /**
+     * Variable telling us if it is the first time running this instance.
+     */
     private boolean firstTime = true;
 
     /**
@@ -94,6 +102,7 @@ public class MainMenuView extends ScreenAdapter {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
+        //Only loaded one time.
         if (IS_ACTIVE) {
         loadAssets();
         loadSounds();
@@ -117,6 +126,9 @@ public class MainMenuView extends ScreenAdapter {
         firstTime = false;
     }
 
+    /**
+     * Initializes the Sounds and Musics used for the game.
+     */
     private void loadSounds() {
         Music toPlay = game.getAssetManager().get("background-music.mp3");
         toPlay.setLooping(true);
@@ -124,6 +136,9 @@ public class MainMenuView extends ScreenAdapter {
         MOUSE_CLICK = game.getAssetManager().get("click.mp3");
     }
 
+    /**
+     * Initializes all of this view's buttons.
+     */
     private void loadButtons() {
         BitmapFont font = new BitmapFont();
         Skin skin = new Skin();
@@ -175,8 +190,8 @@ public class MainMenuView extends ScreenAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 playClick();
-                MyBouncyBird.setPLAYER_ONE_LIFES(3);
-                MyBouncyBird.setPLAYER_TWO_LIFES(3);
+                MyBouncyBird.setPLAYER_ONE_LIVES(3);
+                MyBouncyBird.setPLAYER_TWO_LIVES(3);
                 game.setScreen(new PlayMenuView(game));
                 disableButtons();
             }
@@ -199,12 +214,18 @@ public class MainMenuView extends ScreenAdapter {
         });
     }
 
+    /**
+     * Disables the view's buttons to prevent clicking while in game.
+     */
     private void disableButtons() {
         PLAY_BUTTON.setDisabled(true);
         SETTINGS_BUTTON.setDisabled(true);
         EXIT_BUTTON.setDisabled(true);
     }
 
+    /**
+     * Enables the buttons.
+     */
     private void enableButtons() {
         PLAY_BUTTON.setDisabled(false);
         SETTINGS_BUTTON.setDisabled(false);
@@ -253,7 +274,7 @@ public class MainMenuView extends ScreenAdapter {
     }
 
     /**
-     * Loads the assets needed by this screen.
+     * Loads the assets needed by this game.
      */
     private void loadAssets() {
         this.game.getAssetManager().load( "bird.png" , Texture.class);
@@ -320,7 +341,7 @@ public class MainMenuView extends ScreenAdapter {
     public void render(float delta) {
         game.getBatch().setProjectionMatrix(camera.combined);
 
-        Gdx.gl.glClearColor( RED/255f, GREEN/255f, BLUE/255f, 1 );
+        Gdx.gl.glClearColor( 0, 0, 0, 1 );
 
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
 
@@ -338,17 +359,5 @@ public class MainMenuView extends ScreenAdapter {
         Texture background = game.getAssetManager().get("background.png", Texture.class);
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         game.getBatch().draw(background, 0, 0, 0, 0, (int)(ROOM_WIDTH / PIXEL_TO_METER), (int) (ROOM_HEIGHT / PIXEL_TO_METER));
-
-        //back plate
-        Texture t = game.getAssetManager().get("backplate.png");
-        Image plate = new Image(t);
-
-        plate.scaleBy(2.4f);
-        //plate.draw(game.getBatch(), 1);
-    }
-
-    public OrthographicCamera getCamera() {
-
-        return camera;
     }
 }

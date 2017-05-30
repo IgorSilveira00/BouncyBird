@@ -1,6 +1,6 @@
 android {
-    buildToolsVersion "24.0.3"
-    compileSdkVersion 24
+    buildToolsVersion "25.0.2"
+    compileSdkVersion 25
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -20,7 +20,16 @@ android {
     defaultConfig {
         applicationId "com.aor.bouncy"
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
+    }
+
+    dependencies {
+        compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi"
+        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
+        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
+        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
+        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
     }
 }
 

@@ -4,6 +4,7 @@ import com.aor.bouncy.MyBouncyBird;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.entities.*;
 import com.aor.bouncy.view.GameView;
+import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,11 @@ public class GameModel {
     private BonusModel bonus;
 
     /**
+     * Used to create bonus on middle of screen only. (for testing purposes)
+     */
+    private boolean isBonusStill = false;
+
+    /**
      * Returns a singleton instance of the game model.
      * @return the singleton instance
      */
@@ -85,18 +91,20 @@ public class GameModel {
         left_wall_spikes = new ArrayList<SpikeModel>();
         edges = new ArrayList<EdgeModel>();
 
-       birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
-                GameView.VIEWPORT_HEIGHT / 2,
+        birds.add(new BirdModel(GameController.ROOM_WIDTH / 2,
+                GameController.ROOM_HEIGHT / 2,
                 0));
-       birds.get(0).setNUMBER_LIVES(MyBouncyBird.getPLAYER_ONE_LIFES());
-       birds.get(0).setHeadRight(true);
 
-       //If the game is two players mode, a new bird is created.
+
+        birds.get(0).setNUMBER_LIVES(MyBouncyBird.getPLAYER_ONE_LIVES());
+        birds.get(0).setHeadRight(true);
+
+        //If the game is two players mode, a new bird is created.
         if (GameView.isTWO_PLAYERS()) {
-            birds.add(new BirdModel(GameView.VIEWPORT_WIDTH / 2,
-                    GameView.VIEWPORT_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER,
+            birds.add(new BirdModel(GameController.ROOM_WIDTH / 2,
+                    GameController.ROOM_HEIGHT / 2 - 100 * GameView.PIXEL_TO_METER,
                     0));
-            birds.get(1).setNUMBER_LIVES(MyBouncyBird.getPLAYER_TWO_LIFES());
+            birds.get(1).setNUMBER_LIVES(MyBouncyBird.getPLAYER_TWO_LIVES());
             birds.get(1).setSecond(true);
         }
 
@@ -111,14 +119,14 @@ public class GameModel {
                     EntityModel.ModelType.SPIKE));
 
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
-                    GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT + GameController.corrector,
+                    GameController.ROOM_HEIGHT - SPIKE_HEIGHT + GameController.corrector,
                     - (float) Math.PI / 2,
                     EntityModel.ModelType.SPIKE));
         }
 
         //Right and left walls spikes.
         for (int i = 0; i < AMOUNT_SPIKES - 2 ; i++) {
-            right_wall_spikes.add(new SpikeModel(GameView.VIEWPORT_WIDTH + 1.2f + GameController.corrector,
+            right_wall_spikes.add(new SpikeModel(GameController.ROOM_WIDTH + 1.2f + GameController.corrector,
                     SPIKE_HEIGHT + SPIKE_HEIGHT * i,
                     (float) Math.PI,
                     EntityModel.ModelType.RIGHT_SPIKE));
@@ -133,13 +141,13 @@ public class GameModel {
         edges.add(new EdgeModel(0, 0, 0));
 
         //top edge
-        edges.add(new EdgeModel(0, GameView.VIEWPORT_HEIGHT, 0));
+        edges.add(new EdgeModel(0, GameController.ROOM_HEIGHT, 0));
 
         // left edge
         edges.add(new EdgeModel(0, 0, (float) Math.PI / 2));
 
         //right edge
-        edges.add(new EdgeModel(GameView.VIEWPORT_WIDTH, GameView.VIEWPORT_HEIGHT , (float) Math.PI / 2 ));
+        edges.add(new EdgeModel(GameController.ROOM_WIDTH, GameController.ROOM_HEIGHT , (float) Math.PI / 2 ));
     }
 
     /**
@@ -193,7 +201,10 @@ public class GameModel {
      * @return the bonus.
      */
     public BonusModel createBonus() {
-        bonus = new BonusModel(SPIKE_HEIGHT);
+        if (isBonusStill)
+            bonus = new BonusModel(GameController.ROOM_WIDTH - 4, GameController.ROOM_HEIGHT / 2);
+        else
+            bonus = new BonusModel(SPIKE_HEIGHT);
 
         bonus.setFlaggedForRemoval(false);
         bonus.setTimeToLive(TIME_ALIVE);
@@ -224,7 +235,7 @@ public class GameModel {
     /**
      * Used to reset the class.
      */
-    public static void dispose() {
+    public void dispose() {
         instance = null;
     }
 
@@ -242,5 +253,24 @@ public class GameModel {
      */
     public void incScore() {
         GAME_SCORE++;
+    }
+
+    public void reset() {
+        birds.clear();
+        birds.add(new BirdModel(GameController.ROOM_WIDTH / 2,
+                GameController.ROOM_HEIGHT / 2,
+                0));
+
+
+        birds.get(0).setNUMBER_LIVES(MyBouncyBird.getPLAYER_ONE_LIVES());
+        birds.get(0).setHeadRight(true);
+    }
+
+    /**
+     * Used for testing purposes.
+     * @param bonusStill true if bonus is to be created on the center of the screen.
+     */
+    public void setBonusStill(boolean bonusStill) {
+        isBonusStill = bonusStill;
     }
 }

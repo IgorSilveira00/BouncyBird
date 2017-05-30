@@ -1,7 +1,6 @@
 package com.aor.bouncy.view;
 
 import com.aor.bouncy.MyBouncyBird;
-import com.aor.bouncy.ServerClient;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.GameModel;
 import com.aor.bouncy.model.entities.*;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -97,33 +97,66 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      */
     private Matrix4 debugCamera;
 
+    /**
+     * Label used to display the score
+     * on one player mode only.
+     */
     Label scoreLabel;
 
+    /**
+     * Object of the TextButton class representing the resume button.
+     */
     private TextButton RESUME_BUTTON;
 
+    /**
+     * Object of the TextButton class representing the restart button.
+     */
     private TextButton RESTART_BUTTON;
 
+    /**
+     * Object of the TextButton class representing the exit button.
+     */
     private TextButton EXIT_BUTTON;
 
+    /**
+     * True if the game is on two player mode, false if one player.
+     */
     private static boolean TWO_PLAYERS;
 
+    /**
+     * Object of the Sound class for the edge hit effect.
+     */
     private static Sound EDGE_HIT_EFFECT;
 
+    /**
+     * Object of the Sound class for the jump effect.
+     */
     private static Sound JUMP_EFFECT;
 
+    /**
+     * Object of the Sound class for the end sound.
+     */
     private static Sound END_EFFECT;
 
-    private Stage stage =  new Stage();
+    /**
+     * Stage where all buttons will be drawn.
+     */
+    private Stage stage;
 
+    /**
+     * Variable telling us if it is the first time running this instance.
+     */
     private static boolean FIRST_TIME = true;
 
+    /**
+     * Used to prevent the end sound to play multiple times at a time.
+     */
     private boolean endHasPlayed = false;
 
+    /**
+     * Variable updated by the controller to tell if game over.
+     */
     private boolean END = false;
-
-    private ServerClient serverClient = null;
-
-    private boolean IS_SERVER;
 
     /**
      * Creates this screen.
@@ -132,17 +165,19 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
     public GameView(MyBouncyBird game, boolean TWO_PLAYERS) {
         this.game = game;
         this.TWO_PLAYERS = TWO_PLAYERS;
+        this.stage = new Stage();
 
+        //Enable button clicking and game touching.
         InputMultiplexer multiplexer = new InputMultiplexer(this, stage);
         Gdx.input.setInputProcessor(multiplexer);
 
-
+        //Allow back key used for android.
         Gdx.input.setCatchBackKey(true);
 
         camera = createCamera();
 
         if (!TWO_PLAYERS) {
-            createLabels();
+            createLabel();
             READY_PLAYER_TWO = true;
         }
 
@@ -158,6 +193,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         passedTime = 4;
     }
 
+    /**
+     * Initializes this view's buttons.
+     */
     private void loadButtons() {
         BitmapFont font = new BitmapFont();
         Skin skin = new Skin();
@@ -178,19 +216,20 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
         b1.font = font; b2.font = font; b3.font = font;
 
-        //for the settings button
+        //for the resume button
         b1.up = skin.getDrawable("play-up");
         b1.down = skin.getDrawable("play-down");
         RESUME_BUTTON = new TextButton("", b1);
         RESUME_BUTTON.setPosition(Gdx.graphics.getWidth() / 2f - RESUME_BUTTON.getWidth() / 2f,
                 Gdx.graphics.getHeight() / 2f + RESUME_BUTTON.getHeight() / 2f);
 
-        //for the Exit button
+        //for the restart button
         b2.up = skin.getDrawable("settings-up");
         b2.down = skin.getDrawable("settings-down");
         RESTART_BUTTON = new TextButton("", b2);
         RESTART_BUTTON.setPosition(RESUME_BUTTON.getX(), RESUME_BUTTON.getY() - RESTART_BUTTON.getHeight());
 
+        //for the exit button
         b3.up = skin.getDrawable("exit-up");
         b3.down = skin.getDrawable("exit-down");
         EXIT_BUTTON = new TextButton("", b3);
@@ -203,6 +242,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         addListeners();
     }
 
+    /**
+     * Add the listeners for this view's buttons.
+     */
     private void addListeners() {
         RESUME_BUTTON.addListener(new ChangeListener() {
             @Override
@@ -233,6 +275,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         });
     }
 
+    /**
+     * Disables and hides every button and unpauses the controller updates.
+     */
     private void disableButtons() {
         RESUME_BUTTON.setDisabled(true);
         RESUME_BUTTON.setVisible(false);
@@ -240,10 +285,12 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         RESTART_BUTTON.setVisible(false);
         EXIT_BUTTON.setDisabled(true);
         EXIT_BUTTON.setVisible(false);
-        //IS_RUNNING = true;
         IS_PAUSED = false;
     }
 
+    /**
+     * Enables and activates every button and pauses the controller updates.
+     */
     private void enableButtons() {
         IS_PAUSED = true;
         IS_RUNNING = false;
@@ -255,6 +302,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         EXIT_BUTTON.setVisible(true);
     }
 
+    /**
+     * Initializes this view's sound effects.
+     */
     private void getSoundEffects() {
         EDGE_HIT_EFFECT = game.getAssetManager().get("edge-hit.wav");
         JUMP_EFFECT = game.getAssetManager().get("jump.wav");
@@ -265,21 +315,35 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      * creates a score Label shown on screen.
      * @return the score Label.
      */
-    private void createLabels() {
+    private void createLabel() {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("atwriter.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 200;
+        parameter.borderColor = Color.BLACK;
+        parameter.borderWidth = 4;
+        BitmapFont font = generator.generateFont(parameter); // font size 12 pixels
+        generator.dispose(); // don't forget to dispose to avoid memory leaks!
         scoreLabel = new Label(Integer.toString(GameModel.getInstance().getGAME_SCORE()),
-                new Label.LabelStyle(new BitmapFont(), null));
+                new Label.LabelStyle(font, null));
         scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER  / 2f,
-                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2f);
-        scoreLabel.setFontScale(20);
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 3f);
 
         scoreLabel.setColor(Color.WHITE);
     }
 
+    /**
+     * Plays the edge's collision sound effect.
+     * Accessible to all classes.
+     */
     public static void playHit() {
         if (game.isFX_ENABLED())
             EDGE_HIT_EFFECT.play();
     }
 
+    /**
+     * Plays the jumping sound effect.
+     * Accessible to all classes.
+     */
     public static void playJump() {
         if (game.isFX_ENABLED())
             JUMP_EFFECT.play();
@@ -315,19 +379,23 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
     @Override
     public void render(float delta) {
 
-        //if (!END)
         handleInputs(delta);
 
+        //While not both players are ready the controller is not activated.
         if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
             if (IS_RUNNING) {
                 GameModel.getInstance().getBird().get(0).setFlying(true);
                 if (isTWO_PLAYERS())
                     GameModel.getInstance().getBird().get(1).setFlying(true);
 
-                END = GameController.getInstance().update(delta, serverClient);
+                //END boolean updated from the controller.
+                END = GameController.getInstance().update(delta);
+                if (GameController.getInstance().isToPlaySound())
+                    playHit();
                 GameController.getInstance().removeFlagged();
             }
         } else {
+            //If at least one is not ready, the bird is not flying.
             GameModel.getInstance().getBird().get(0).setFlying(false);
             if (isTWO_PLAYERS())
                 GameModel.getInstance().getBird().get(1).setFlying(false);
@@ -342,7 +410,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         game.getBatch().begin();
         drawBackground();
 
+        //Game Over happened.
         if (END) {
+            //Play sound effects.
             if (game.isMusicEnabled())
                 game.getBACKGROUND_MUSIC().pause();
 
@@ -351,6 +421,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 endHasPlayed = true;
             }
 
+            //Stop the bird's flying movement.
             GameModel.getInstance().getBird().get(0).setFlying(false);
             if (!TWO_PLAYERS) {
                 drawScore();
@@ -361,16 +432,18 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 GameModel.getInstance().getBird().get(1).setFlying(false);
                 passedTime += delta;
             }
+            //Stop the controller updates.
             IS_RUNNING = false;
 
             if (passedTime > 3) {
                 if (TWO_PLAYERS) {
-                    if (MyBouncyBird.getPLAYER_ONE_LIFES() < 1
-                            || MyBouncyBird.getPLAYER_TWO_LIFES() < 1) {
+                    //Restart the next round of the game if there are still lives.
+                    if (MyBouncyBird.getPLAYER_ONE_LIVES() < 1
+                            || MyBouncyBird.getPLAYER_TWO_LIVES() < 1) {
 
                         if (game.isMusicEnabled())
-                            MyBouncyBird.setPLAYER_ONE_LIFES(3);
-                        MyBouncyBird.setPLAYER_TWO_LIFES(3);
+                            MyBouncyBird.setPLAYER_ONE_LIVES(3);
+                        MyBouncyBird.setPLAYER_TWO_LIVES(3);
                         FIRST_TIME = true;
                         game.setScreen(new MainMenuView(game, false));
                     }
@@ -414,11 +487,14 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         stage.draw();
     }
 
+    /**
+     * Draws the game winner's image.
+     */
     private void drawWinner() {
 
-        if (MyBouncyBird.getPLAYER_ONE_LIFES() < 1 || MyBouncyBird.getPLAYER_TWO_LIFES() < 1) {
+        if (MyBouncyBird.getPLAYER_ONE_LIVES() < 1 || MyBouncyBird.getPLAYER_TWO_LIVES() < 1) {
 
-            Texture t1 = game.getAssetManager().get(MyBouncyBird.getPLAYER_TWO_LIFES() < 1 ? "win_p1.png" : "win_p2.png", Texture.class);
+            Texture t1 = game.getAssetManager().get(MyBouncyBird.getPLAYER_TWO_LIVES() < 1 ? "win_p1.png" : "win_p2.png", Texture.class);
 
             Image i1 = new Image(t1);
 
@@ -430,6 +506,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         }
     }
 
+    /**
+     * Draws the countdown seconds' images.
+     */
     private void countdownTimer() {
         Texture t1;
         boolean draw = true;
@@ -459,7 +538,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
     }
 
     /**
-     * Upon losing the scoreing is displayed on screen.
+     * Upon losing the scoring is displayed on screen.
      */
     private void drawScore() {
         Texture t1 = game.getAssetManager().get("score_template.png", Texture.class);
@@ -497,6 +576,10 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
             i2.draw(game.getBatch(), 0.8f);
     }
 
+    /**
+     * Returns the IS TWO PLAYERS flag of the game.
+     * @return true if it is TWO PLAYERS, false otherwise.
+     */
     public static boolean isTWO_PLAYERS() {
         return TWO_PLAYERS;
     }
@@ -508,6 +591,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      */
     private void handleInputs(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            //First touch is to ready up only, prevent controller updates right away.
             if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
                 playJump();
                 GameController.getInstance().jump(0);
@@ -515,6 +599,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
             READY_PLAYER_ONE = true;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
+            //First touch is to ready up only, prevent controller updates right away.
             if (READY_PLAYER_TWO && READY_PLAYER_ONE && IS_RUNNING) {
                 playJump();
                 GameController.getInstance().jump(1);
@@ -526,12 +611,11 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
             GameModel.getInstance().getBird().get(0).setFlying(false);
             enableButtons();
         }
-        if (!IS_PAUSED) {
-
-        }
         if (Gdx.input.justTouched()){
+            //First touch is to ready up only, prevent controller updates right away.
             if (TWO_PLAYERS) {
                 if (Gdx.input.getY() > Gdx.graphics.getHeight() / 2f) {
+                    //If touch height higher than half total height, touch is to player 1.
                     if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
                         playJump();
                         GameController.getInstance().jump(1);
@@ -539,6 +623,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                     READY_PLAYER_TWO = true;
                 }
                 else if (Gdx.input.getY() < Gdx.graphics.getHeight() / 2f) {
+                    //If touch height lower than half total height, touch is to player 2.
                     if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
                         playJump();
                         GameController.getInstance().jump(0);
@@ -547,7 +632,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 }
             }
             else {
-
+                //First touch is to ready up only, prevent controller updates right away.
                 if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
                     playJump();
                     GameController.getInstance().jump(0);
@@ -568,35 +653,41 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
         List<EdgeModel> edges = GameModel.getInstance().getEdges();
 
-        //TODO pontos separados para os dois
-
+        //Score label for one player mode.
         if (!TWO_PLAYERS) {
             scoreLabel.setText(Integer.toString(GameModel.getInstance().getGAME_SCORE()));
             scoreLabel.draw(game.getBatch(), 1);
         }
 
+        //Ceiling and floor spikes.
         for (int i = 0; i < floor_ceiling_spikes.size(); i++) {
             EntityView view = ViewFactory.makeView(game, floor_ceiling_spikes.get(i));
             view.update(floor_ceiling_spikes.get(i));
             view.draw(game.getBatch());
         }
+
+        //Right wall spikes.
         for (int i = 0; i < right_wall_spikes.size(); i++) {
             EntityView view = ViewFactory.makeView(game, right_wall_spikes.get(i));
             view.update(right_wall_spikes.get(i));
             view.draw(game.getBatch());
         }
+
+        //Left wall spikes.
         for (int i = 0; i < left_wall_spikes.size(); i++) {
             EntityView view = ViewFactory.makeView(game, left_wall_spikes.get(i));
             view.update(left_wall_spikes.get(i));
             view.draw(game.getBatch());
         }
 
+        //Edges
         for (EdgeModel edge: edges) {
             EntityView view = ViewFactory.makeView(game, edge);
             view.update(edge);
             view.draw(game.getBatch());
         }
 
+        //Bonus
         if (GameModel.getInstance().getBonus() != null) {
             BonusModel bonus = GameModel.getInstance().getBonus();
             EntityView bonusView = ViewFactory.makeView(game, bonus);
@@ -604,11 +695,13 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
             bonusView.draw(game.getBatch());
         }
 
+        //Bird ONE
         BirdModel bird = GameModel.getInstance().getBird().get(0);
         EntityView view = ViewFactory.makeView(game, bird);
         view.update(bird);
         view.draw(game.getBatch());
 
+        //Bird TWO
         if (TWO_PLAYERS) {
             BirdModel bird2 = GameModel.getInstance().getBird().get(1);
             EntityView view2 = ViewFactory.makeView(game, bird2);
@@ -617,6 +710,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         }
     }
 
+    /**
+     * Prints the respective Image for the current amount of lives of each player.
+     */
     private void drawLives() {
         Texture t1 = game.getAssetManager().get("hearts" + GameModel.getInstance().getBird().get(0).getNUMBER_LIVES() + "_p1.png", Texture.class);
         Image i1 = new Image(t1);
@@ -659,6 +755,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
     @Override
     public boolean keyUp(int keycode) {
+        //Catch android back key.
         if (keycode == Input.Keys.BACK) {
             if (!END) {
                 MainMenuView.playClick();

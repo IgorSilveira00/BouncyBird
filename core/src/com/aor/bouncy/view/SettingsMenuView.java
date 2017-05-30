@@ -13,9 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-import static com.aor.bouncy.controller.GameController.ROOM_HEIGHT;
-import static com.aor.bouncy.controller.GameController.ROOM_WIDTH;
-
 public class SettingsMenuView extends ScreenAdapter implements ApplicationListener, InputProcessor{
     //test
     static int RED = 20, GREEN = 50, BLUE = 200;
@@ -43,18 +40,30 @@ public class SettingsMenuView extends ScreenAdapter implements ApplicationListen
      */
     private final OrthographicCamera camera;
 
+    /**
+     * Stage where all buttons will be drawn.
+     */
     private Stage stage;
 
+    /**
+     * Object of the CheckBox class representing the music check button.
+     */
     private CheckBox MUSIC_CHECK;
 
+    /**
+     * Object of the CheckBox class representing the FX check button.
+     */
     private CheckBox FX_CHECK;
 
-    private TextButton COLOR_BUTTON;
-
+    /**
+     * Object of the TextButton class representing the back button.
+     */
     private TextButton BACK_BUTTON;
 
-    private Slider VOLUME_SLIDER;
-    private boolean firstTime = true;
+    /**
+     * Variable telling us if it is the first time running this instance.
+     */
+    private boolean FIRST_TIME = true;
 
     /**
      * Creates this screen.
@@ -72,6 +81,9 @@ public class SettingsMenuView extends ScreenAdapter implements ApplicationListen
         camera = createCamera();
     }
 
+    /**
+     * Initializes this view's buttons and boxes.
+     */
     private void loadUI() {
         BitmapFont font = new BitmapFont();
         Skin skin = new Skin();
@@ -95,46 +107,28 @@ public class SettingsMenuView extends ScreenAdapter implements ApplicationListen
         BACK_BUTTON.setPosition(Gdx.graphics.getWidth() - BACK_BUTTON.getWidth(),
                 0);
 
-        //TODO
-        sliderStyle.knobDown = skin.getDrawable("back-up");
-        sliderStyle.knobOver = skin.getDrawable("back-down");
-        VOLUME_SLIDER = new Slider(0f, 10f, 1f, false, sliderStyle);
-        VOLUME_SLIDER.setName("Volume");
-        VOLUME_SLIDER.setPosition(Gdx.graphics.getWidth() / 2f,
-                Gdx.graphics.getHeight() / 2f);
-
         checkBoxStyle.font = font;
         checkBoxStyle.checkboxOn = skin.getDrawable("checked");
         checkBoxStyle.checkboxOff = skin.getDrawable("unchecked");
 
+        //Music checkbox.
         MUSIC_CHECK = new CheckBox(" Music", checkBoxStyle);
         MUSIC_CHECK.setPosition(Gdx.graphics.getWidth() / 2f - MUSIC_CHECK.getWidth() / 2f,
                 Gdx.graphics.getHeight() / 2f + MUSIC_CHECK.getHeight() / 2f);
 
+        //FX checkbox.
         FX_CHECK = new CheckBox(" FX Sounds", checkBoxStyle);
         FX_CHECK.setPosition(MUSIC_CHECK.getX(),
                 MUSIC_CHECK.getY() - 2 * FX_CHECK.getHeight());
 
-        COLOR_BUTTON = new TextButton("", buttonStyle);
-        COLOR_BUTTON.setPosition(MUSIC_CHECK.getX(),
-                FX_CHECK.getY() - 2 * COLOR_BUTTON.getHeight());
-
+        //Updated from the game actual state of these options.
         FX_CHECK.setChecked(game.isFX_ENABLED());
         MUSIC_CHECK.setChecked(game.isMusicEnabled());
 
-        addActors();
-        addListeners();
-    }
-
-    /**
-     * Adds the buttons to the MainMenuView's stage.
-     */
-    private void addActors() {
         stage.addActor(BACK_BUTTON);
         stage.addActor(MUSIC_CHECK);
         stage.addActor(FX_CHECK);
-        stage.addActor(COLOR_BUTTON);
-        stage.addActor(VOLUME_SLIDER);
+        addListeners();
     }
 
     /**
@@ -168,13 +162,6 @@ public class SettingsMenuView extends ScreenAdapter implements ApplicationListen
                 game.setScreen(new MainMenuView(game, false));
             }
         });
-
-        COLOR_BUTTON.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                MainMenuView.playClick();
-            }
-        });
     }
 
     /**
@@ -197,9 +184,9 @@ public class SettingsMenuView extends ScreenAdapter implements ApplicationListen
     public void resize(int width, int height) {
         super.resize(width, height);
 
-        if (!firstTime)
+        if (!FIRST_TIME)
             game.setScreen(new SettingsMenuView(game));
-        firstTime = false;
+        FIRST_TIME = false;
     }
 
     @Override
@@ -251,11 +238,6 @@ public class SettingsMenuView extends ScreenAdapter implements ApplicationListen
     private void drawEntities() {
     }
 
-    public OrthographicCamera getCamera() {
-
-        return camera;
-    }
-
     @Override
     public boolean keyDown(int keycode) {
         return false;
@@ -263,6 +245,7 @@ public class SettingsMenuView extends ScreenAdapter implements ApplicationListen
 
     @Override
     public boolean keyUp(int keycode) {
+        //Catch the android back key.
         if (keycode == Input.Keys.BACK) {
             MainMenuView.playClick();
             game.setScreen(new MainMenuView(game, false));
