@@ -25,7 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.sun.prism.image.ViewPort;
 
 import java.util.List;
 
@@ -60,8 +59,6 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      * Time passed since last time. For score and start countdown use only.
      */
     private float passedTime = 4;
-
-    private FitViewport viewPort;
 
     /**
      * Used to debug the position of the physics fixtures
@@ -413,7 +410,6 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 if (isTWO_PLAYERS())
                     GameModel.getInstance().getBird().get(1).setFlying(true);
 
-                GameController.getInstance().setLosingEnabled(false);
                 //END boolean updated from the controller.
                 END = GameController.getInstance().update(delta);
                 if (GameController.getInstance().isToPlaySound())
@@ -636,7 +632,6 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                     GameController.getInstance().jump(0);
                 lastShake = System.currentTimeMillis();
             }
-        } else {
             if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
                 //First touch is to ready up only, prevent controller updates right away.
                 if (READY_PLAYER_TWO && READY_PLAYER_ONE && IS_RUNNING) {
