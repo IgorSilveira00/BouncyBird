@@ -119,7 +119,7 @@ public class GameModel {
                     EntityModel.ModelType.SPIKE));
 
             floor_ceiling_spikes.add(new SpikeModel(2 * SPIKE_HEIGHT + SPIKE_HEIGHT * i,
-                    GameController.ROOM_HEIGHT - SPIKE_HEIGHT + GameController.corrector,
+                    GameView.VIEWPORT_HEIGHT - SPIKE_HEIGHT + GameController.corrector,
                     - (float) Math.PI / 2,
                     EntityModel.ModelType.SPIKE));
         }
@@ -141,7 +141,7 @@ public class GameModel {
         edges.add(new EdgeModel(0, 0, 0));
 
         //top edge
-        edges.add(new EdgeModel(0, GameController.ROOM_HEIGHT, 0));
+        edges.add(new EdgeModel(0, GameView.VIEWPORT_HEIGHT, 0));
 
         // left edge
         edges.add(new EdgeModel(0, 0, (float) Math.PI / 2));

@@ -12,6 +12,12 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.useWakelock = true;
+		config.useGyroscope = true;
+		config.useGLSurfaceView20API18 = true;
+		config.r = 8;
+		config.g = 8;
+		config.b = 8;
+		config.a = 8;
 		initialize(new MyBouncyBird(), config);
 	}
 }

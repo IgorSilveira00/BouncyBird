@@ -24,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.sun.prism.image.ViewPort;
 
 import java.util.List;
 
@@ -58,6 +60,8 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      * Time passed since last time. For score and start countdown use only.
      */
     private float passedTime = 4;
+
+    private FitViewport viewPort;
 
     /**
      * Used to debug the position of the physics fixtures
@@ -158,8 +162,14 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      */
     private boolean END = false;
 
+    private static long lastShake = 0;
+
+    private static int lastTouch = 0;
+    private boolean firstTimeResize = true;
+
     /**
      * Creates this screen.
+     *
      * @param game The game that called this screen
      */
     public GameView(MyBouncyBird game, boolean TWO_PLAYERS) {
@@ -193,6 +203,15 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         passedTime = 4;
     }
 
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+
+        if (!firstTimeResize)
+            game.setScreen(new GameView(game, TWO_PLAYERS));
+        firstTimeResize = false;
+    }
+
     /**
      * Initializes this view's buttons.
      */
@@ -214,7 +233,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         MainMenuView.readTexture("exit-down", "exit-down.png", textureAtlas);
         skin.addRegions(textureAtlas);
 
-        b1.font = font; b2.font = font; b3.font = font;
+        b1.font = font;
+        b2.font = font;
+        b3.font = font;
 
         //for the resume button
         b1.up = skin.getDrawable("play-up");
@@ -313,10 +334,11 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
     /**
      * creates a score Label shown on screen.
+     *
      * @return the score Label.
      */
     private void createLabel() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("atwriter.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("label.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 200;
         parameter.borderColor = Color.BLACK;
@@ -325,8 +347,8 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         generator.dispose(); // don't forget to dispose to avoid memory leaks!
         scoreLabel = new Label(Integer.toString(GameModel.getInstance().getGAME_SCORE()),
                 new Label.LabelStyle(font, null));
-        scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER  / 2f,
-                VIEWPORT_HEIGHT / PIXEL_TO_METER / 3f);
+        scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 2f,
+                VIEWPORT_HEIGHT / PIXEL_TO_METER / 2.5f);
 
         scoreLabel.setColor(Color.WHITE);
     }
@@ -351,10 +373,11 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
     /**
      * Creates the camera used to show the viewport.
+     *
      * @return the camera
      */
     private OrthographicCamera createCamera() {
-        VIEWPORT_HEIGHT = VIEWPORT_WIDTH * Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
+        VIEWPORT_HEIGHT = ((float) Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth()) * VIEWPORT_WIDTH;
         OrthographicCamera camera = new OrthographicCamera(VIEWPORT_WIDTH / PIXEL_TO_METER,
                 VIEWPORT_HEIGHT / PIXEL_TO_METER);
 
@@ -363,7 +386,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 0);
         camera.update();
 
-        if (DEBUG_PHYSICS){
+        if (DEBUG_PHYSICS) {
             debugRenderer = new Box2DDebugRenderer();
             debugCamera = camera.combined.cpy();
             debugCamera.scl(1 / PIXEL_TO_METER);
@@ -380,6 +403,8 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
     public void render(float delta) {
 
         handleInputs(delta);
+        System.out.println("Altura: " + Gdx.graphics.getHeight() * PIXEL_TO_METER);
+        System.out.println("Passaro: " + GameModel.getInstance().getBird().get(0).getY());
 
         //While not both players are ready the controller is not activated.
         if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
@@ -388,24 +413,29 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 if (isTWO_PLAYERS())
                     GameModel.getInstance().getBird().get(1).setFlying(true);
 
+                GameController.getInstance().setLosingEnabled(false);
                 //END boolean updated from the controller.
                 END = GameController.getInstance().update(delta);
                 if (GameController.getInstance().isToPlaySound())
                     playHit();
                 GameController.getInstance().removeFlagged();
+            } else {
+                GameModel.getInstance().getBird().get(0).setFlying(false);
+                if (isTWO_PLAYERS())
+                    GameModel.getInstance().getBird().get(1).setFlying(false);
             }
         } else {
             //If at least one is not ready, the bird is not flying.
             GameModel.getInstance().getBird().get(0).setFlying(false);
-            if (isTWO_PLAYERS())
-                GameModel.getInstance().getBird().get(1).setFlying(false);
+                if (isTWO_PLAYERS())
+                    GameModel.getInstance().getBird().get(1).setFlying(false);//If at least one is not ready, the bird is not flying.
         }
 
         game.getBatch().setProjectionMatrix(camera.combined);
 
-        Gdx.gl.glClearColor( 0/255f, 0/255f, 0/255f, 1 );
+        Gdx.gl.glClearColor(0 / 255f, 0 / 255f, 0 / 255f, 1);
 
-        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         game.getBatch().begin();
         drawBackground();
@@ -426,8 +456,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
             if (!TWO_PLAYERS) {
                 drawScore();
                 passedTime += delta;
-            }
-            else {
+            } else {
                 drawWinner();
                 GameModel.getInstance().getBird().get(1).setFlying(false);
                 passedTime += delta;
@@ -446,14 +475,12 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                         MyBouncyBird.setPLAYER_TWO_LIVES(3);
                         FIRST_TIME = true;
                         game.setScreen(new MainMenuView(game, false));
-                    }
-                    else {
+                    } else {
                         GameModel.getInstance().dispose();
                         GameController.getInstance().dispose();
                         game.setScreen(new GameView(game, true));
                     }
-                }
-                else {
+                } else {
                     if (game.isMusicEnabled())
                         game.getBACKGROUND_MUSIC().play();
                     FIRST_TIME = true;
@@ -554,7 +581,8 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      * Draws the "are you ready textures" on screen.
      */
     private void drawReadies() {
-        Texture t2; Image i2 = new Image();
+        Texture t2;
+        Image i2 = new Image();
         Texture t1 = game.getAssetManager().get("ready_p1.png", Texture.class);
         Image i1 = new Image(t1);
         i1.scaleBy(2);
@@ -578,6 +606,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
 
     /**
      * Returns the IS TWO PLAYERS flag of the game.
+     *
      * @return true if it is TWO PLAYERS, false otherwise.
      */
     public static boolean isTWO_PLAYERS() {
@@ -597,50 +626,31 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 GameController.getInstance().jump(0);
             }
             READY_PLAYER_ONE = true;
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
-            //First touch is to ready up only, prevent controller updates right away.
-            if (READY_PLAYER_TWO && READY_PLAYER_ONE && IS_RUNNING) {
-                playJump();
-                GameController.getInstance().jump(1);
-            }
-            READY_PLAYER_TWO = true;
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && IS_RUNNING) {
-            MainMenuView.playClick();
-            GameModel.getInstance().getBird().get(0).setFlying(false);
-            enableButtons();
-        }
-        if (Gdx.input.justTouched()){
-            //First touch is to ready up only, prevent controller updates right away.
-            if (TWO_PLAYERS) {
-                if (Gdx.input.getY() > Gdx.graphics.getHeight() / 2f) {
-                    //If touch height higher than half total height, touch is to player 1.
-                    if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                        playJump();
-                        GameController.getInstance().jump(1);
-                    }
-                    READY_PLAYER_TWO = true;
-                }
-                else if (Gdx.input.getY() < Gdx.graphics.getHeight() / 2f) {
-                    //If touch height lower than half total height, touch is to player 2.
-                    if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                        playJump();
-                        GameController.getInstance().jump(0);
-                    }
-                    READY_PLAYER_ONE = true;
-                }
-            }
-            else {
-                //First touch is to ready up only, prevent controller updates right away.
-                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                    playJump();
-                    GameController.getInstance().jump(0);
-                }
-                READY_PLAYER_ONE = true;
-            }
-        }
+        } else if (System.currentTimeMillis() - lastShake > 250 && !TWO_PLAYERS) {
 
+            float gyroY = Gdx.input.getGyroscopeY();
+
+            if (Math.abs(gyroY) > 5) {
+                ++lastTouch;
+                if (lastTouch >= 0)
+                    GameController.getInstance().jump(0);
+                lastShake = System.currentTimeMillis();
+            }
+        } else {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
+                //First touch is to ready up only, prevent controller updates right away.
+                if (READY_PLAYER_TWO && READY_PLAYER_ONE && IS_RUNNING) {
+                    playJump();
+                    GameController.getInstance().jump(1);
+                }
+                READY_PLAYER_TWO = true;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && IS_RUNNING) {
+                MainMenuView.playClick();
+                GameModel.getInstance().getBird().get(0).setFlying(false);
+                enableButtons();
+            }
+        }
     }
 
     /**
@@ -771,13 +781,49 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         return false;
     }
 
+    int bluePlayerPointer, redPlayerPointer;
+
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        //First touch is to ready up only, prevent controller updates right away.
+        if (TWO_PLAYERS) {
+            if (Gdx.input.getY() > Gdx.graphics.getHeight() / 2f) {
+                //If touch height higher than half total height, touch is to player 1.
+                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
+                    playJump();
+                    bluePlayerPointer = pointer;
+                }
+                READY_PLAYER_TWO = true;
+            }
+            else if (Gdx.input.getY() < Gdx.graphics.getHeight() / 2f) {
+                //If touch height lower than half total height, touch is to player 2.
+                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
+                    playJump();
+                    redPlayerPointer = pointer;
+                }
+                READY_PLAYER_ONE = true;
+            }
+        }
+        else {
+            //First touch is to ready up only, prevent controller updates right away.
+            if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
+                playJump();
+                lastTouch = 1;
+                redPlayerPointer = pointer;
+            }
+            READY_PLAYER_ONE = true;
+        }
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (IS_RUNNING) {
+            if (pointer == bluePlayerPointer)
+                GameController.getInstance().jump(1);
+            if (pointer == redPlayerPointer)
+                GameController.getInstance().jump(0);
+        }
         return false;
     }
 
