@@ -36,7 +36,7 @@ public class GameModel {
     /**
      * Amount in seconds that a bonus lasts.
      */
-    private static final float TIME_ALIVE = 8;
+    private static float TIME_ALIVE = 8;
 
     /**
      * The spikes present in the game's room's floor.
@@ -201,8 +201,10 @@ public class GameModel {
      * @return the bonus.
      */
     public BonusModel createBonus() {
-        if (isBonusStill)
-            bonus = new BonusModel(GameController.ROOM_WIDTH - 4, GameController.ROOM_HEIGHT / 2);
+        if (isBonusStill) {
+            TIME_ALIVE = 1000;
+            bonus = new BonusModel(GameController.ROOM_WIDTH / 2f, GameController.ROOM_HEIGHT / 2f);
+        }
         else
             bonus = new BonusModel(SPIKE_HEIGHT);
 

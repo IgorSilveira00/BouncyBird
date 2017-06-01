@@ -252,7 +252,7 @@ public class GameController implements ContactListener{
         }
 
        if (isJumpEnabled)
-           processJump();
+           processJump(birdToJumpIndex);
 
         moveBodies("0;" + Float.toString(birdBodies.get(0).getX() + BIRD_X_SPEED) + ";" + Float.toString(birdBodies.get(0).getY()));
 
@@ -268,6 +268,46 @@ public class GameController implements ContactListener{
             hasTurned = false;
 
         return END;
+    }
+
+    /**
+     * A contact between two objects was detected.
+     * @param contact the detected contact
+     */
+    @Override
+    public void beginContact(Contact contact) {
+        Body bodyA = contact.getFixtureA().getBody();
+        Body bodyB = contact.getFixtureB().getBody();
+    /*    System.out.println("1: " + bodyA.getUserData());
+        System.out.println("2: " + bodyB.getUserData());*/
+
+        if (bodyA.getUserData() instanceof BonusModel)
+            bonusCollision(bodyA);
+        if (bodyB.getUserData() instanceof BonusModel)
+            bonusCollision(bodyB);
+
+        if (bodyA.getUserData() instanceof BirdModel && bodyB.getUserData() instanceof SpikeModel)
+            birdSpikeCollision(bodyB, bodyA);
+        if (bodyA.getUserData() instanceof SpikeModel && bodyB.getUserData() instanceof BirdModel)
+            birdSpikeCollision(bodyA, bodyB);
+
+        if (bodyA.getUserData() instanceof BirdModel && bodyB.getUserData() instanceof EdgeModel)
+            birdEdgeCollision();
+
+        if (bodyA.getUserData() instanceof EdgeModel && bodyB.getUserData() instanceof BirdModel)
+            birdEdgeCollision();
+    }
+
+    @Override
+    public void endContact(Contact contact) {
+    }
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {
+    }
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {
     }
 
     public boolean isToPlaySound() {
@@ -447,10 +487,10 @@ public class GameController implements ContactListener{
     /**
      * Checks to see if the jump flag was activated and makes the bird jump.
      */
-    private void processJump() {
+    private void processJump(int index) {
         if(isJump)
         {
-            if (birdToJumpIndex == 0)
+            if (index == 0)
                 speedBirdOne = UPWARD_SPEED;
             else
                 speedBirdTwo = UPWARD_SPEED; //negative relative to the normal gravity
@@ -459,14 +499,10 @@ public class GameController implements ContactListener{
         speedBirdOne += (GRAVITY); //physics ya, the speed is affected by gravity
         speedBirdTwo += (GRAVITY); //physics ya, the speed is affected by gravity
 
-        birdBodies.get(0).setTransform(birdBodies.get(0).getX(),
-                birdBodies.get(0).getY() + speedBirdOne,
-                0);
+        moveBodies("0;" + Float.toString(birdBodies.get(0).getX()) + ";" + Float.toString(birdBodies.get(0).getY() + speedBirdOne));
 
         if (GameView.isTWO_PLAYERS())
-            birdBodies.get(1).setTransform(birdBodies.get(1).getX(),
-                    birdBodies.get(1).getY() + speedBirdTwo,
-                    0);
+            moveBodies("1;" + Float.toString(birdBodies.get(1).getX()) + ";" + Float.toString(birdBodies.get(1).getY() + speedBirdTwo));
     }
     /**
      * Spawns a new bonus in the room.
@@ -481,43 +517,6 @@ public class GameController implements ContactListener{
             timeToNextBonus -= delta;
     }
 
-    /**
-     * A contact between two objects was detected.
-     * @param contact the detected contact
-     */
-    @Override
-    public void beginContact(Contact contact) {
-        Body bodyA = contact.getFixtureA().getBody();
-        Body bodyB = contact.getFixtureB().getBody();
-
-        if (bodyA.getUserData() instanceof BonusModel)
-            bonusCollision(bodyA);
-        if (bodyB.getUserData() instanceof BonusModel)
-            bonusCollision(bodyB);
-
-        if (bodyA.getUserData() instanceof BirdModel && bodyB.getUserData() instanceof SpikeModel)
-            birdSpikeCollision(bodyB, bodyA);
-        if (bodyA.getUserData() instanceof SpikeModel && bodyB.getUserData() instanceof BirdModel)
-            birdSpikeCollision(bodyA, bodyB);
-
-        if (bodyA.getUserData() instanceof BirdModel && bodyB.getUserData() instanceof EdgeModel)
-            birdEdgeCollision();
-
-        if (bodyA.getUserData() instanceof EdgeModel && bodyB.getUserData() instanceof BirdModel)
-            birdEdgeCollision();
-    }
-
-    @Override
-    public void endContact(Contact contact) {
-    }
-
-    @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {
-    }
-
-    @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-    }
 
     /**
      * Handles collision between bird and spike.
@@ -533,7 +532,7 @@ public class GameController implements ContactListener{
                 MyBouncyBird.setPLAYER_ONE_LIVES(MyBouncyBird.getPLAYER_ONE_LIVES() - 1);
             hasDecreasedLife = true;
         }
-
+        System.out.println("IS DEAD");
         if (isLosingEnabled)
             END = true;
     }

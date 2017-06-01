@@ -57,11 +57,6 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
     private TextButton TWO_PLAY_BUTTON;
 
     /**
-     * Object of the TextButton class representing the 2P Network button.
-     */
-    private TextButton TWO_NET_BUTTON;
-
-    /**
      * Object of the TextButton class representing the back button.
      */
     private TextButton BACK_BUTTON;
@@ -104,8 +99,6 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
         readTexture("1plocal-down", "1plocal-down.png", textureAtlas);
         readTexture("2plocal-up", "2plocal-up.png", textureAtlas);
         readTexture("2plocal-down", "2plocal-down.png", textureAtlas);
-        readTexture("2pnet-up", "2pnet-up.png", textureAtlas);
-        readTexture("2pnet-down", "2pnet-down.png", textureAtlas);
         readTexture("back-up", "back-up.png", textureAtlas);
         readTexture("back-down", "back-down.png", textureAtlas);
         skin.addRegions(textureAtlas);
@@ -116,22 +109,15 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
         b1.up = skin.getDrawable("1plocal-up");
         b1.down = skin.getDrawable("1plocal-down");
         ONE_PLAY_BUTTON = new TextButton("", b1);
-        ONE_PLAY_BUTTON.setPosition(Gdx.graphics.getWidth() / 2f - ONE_PLAY_BUTTON.getWidth() / 2f,
-                Gdx.graphics.getHeight() / 2f + ONE_PLAY_BUTTON.getHeight() / 2f);
+        ONE_PLAY_BUTTON.setPosition(Gdx.graphics.getWidth() / 4f - ONE_PLAY_BUTTON.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - ONE_PLAY_BUTTON.getHeight() / 2f);
 
         //for the 2 local players game button
         b2.up = skin.getDrawable("2plocal-up");
         b2.down = skin.getDrawable("2plocal-down");
         TWO_PLAY_BUTTON = new TextButton("", b2);
-        TWO_PLAY_BUTTON.setPosition(ONE_PLAY_BUTTON.getX(),
-                ONE_PLAY_BUTTON.getY() - ONE_PLAY_BUTTON.getHeight());
-
-        //for the 2 net players game button
-        b3.up = skin.getDrawable("2pnet-up");
-        b3.down = skin.getDrawable("2pnet-down");
-        TWO_NET_BUTTON = new TextButton("", b3);
-        TWO_NET_BUTTON.setPosition(TWO_PLAY_BUTTON.getX(),
-                TWO_PLAY_BUTTON.getY() - TWO_PLAY_BUTTON.getHeight());
+        TWO_PLAY_BUTTON.setPosition(3 * Gdx.graphics.getWidth() / 4f - TWO_PLAY_BUTTON.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - TWO_PLAY_BUTTON.getHeight() / 2f);
 
         //for the Exit button
         b4.up = skin.getDrawable("back-up");
@@ -140,18 +126,10 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
         BACK_BUTTON.setPosition(Gdx.graphics.getWidth() - BACK_BUTTON.getWidth(),
                  0);
 
-        addActors();
-        addListeners();
-    }
-
-    /**
-     * Adds the buttons to the MainMenuView's stage.
-     */
-    private void addActors() {
         stage.addActor(ONE_PLAY_BUTTON);
         stage.addActor(TWO_PLAY_BUTTON);
-        stage.addActor(TWO_NET_BUTTON);
         stage.addActor(BACK_BUTTON);
+        addListeners();
     }
 
     @Override
@@ -206,18 +184,6 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
             }
         });
 
-        TWO_NET_BUTTON.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                MainMenuView.playClick();
-
-                GameController.getInstance().dispose();
-                GameModel.getInstance().dispose();
-
-                game.setScreen(new NetworkMenu(game));
-            }
-        });
-
         BACK_BUTTON.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -233,7 +199,6 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
     private void disableButtons() {
         ONE_PLAY_BUTTON.setDisabled(true);
         TWO_PLAY_BUTTON.setDisabled(true);
-        TWO_NET_BUTTON.setDisabled(true);
         BACK_BUTTON.setDisabled(true);
     }
 
@@ -243,7 +208,6 @@ public class PlayMenuView extends ScreenAdapter implements ApplicationListener, 
     private void enableButtons() {
         ONE_PLAY_BUTTON.setDisabled(false);
         TWO_PLAY_BUTTON.setDisabled(false);
-        TWO_NET_BUTTON.setDisabled(false);
         BACK_BUTTON.setDisabled(false);
     }
 

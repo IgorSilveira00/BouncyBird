@@ -3,6 +3,7 @@ package test;
 import com.aor.bouncy.controller.GameController;
 import com.aor.bouncy.model.GameModel;
 import com.aor.bouncy.model.entities.SpikeModel;
+import com.aor.bouncy.view.GameView;
 
 import java.util.List;
 
@@ -14,9 +15,11 @@ public class GameControllerTest extends GameTest{
      * Tests if the game has ended with no inputs for the bird's movement.
      * Thus for, the final bird height should be less than
      * half the game height.
-     */
+     **/
     @org.junit.Test
     public void gameOverWithNoInputs() throws Exception {
+        GameModel.getInstance().dispose();
+        GameController.getInstance().dispose();
 
         boolean END = false;
 
@@ -24,9 +27,6 @@ public class GameControllerTest extends GameTest{
             END =  GameController.getInstance().update(0.1f);
 
         assertTrue(GameController.getBirdBodies().get(0).getY() < GameController.ROOM_HEIGHT / 2);
-
-        GameModel.getInstance().dispose();
-        GameController.getInstance().dispose();
     }
 
     /**
@@ -36,18 +36,23 @@ public class GameControllerTest extends GameTest{
      */
     @org.junit.Test
     public void gameOverWithRelentlessInputs() throws Exception {
+        GameModel.getInstance().dispose();
+        GameController.getInstance().dispose();
 
         boolean END = false;
+        int counter = 0;
 
         while (!END) {
-            GameController.getInstance().jump(0);  //apply jump to bird one
+
+            if (counter % 34 == 0) {
+                GameController.getInstance().jump(0);  //apply jump to bird one
+                System.out.println(GameController.getInstance().getBirdBodies().get(0).getY());
+            }
             END =  GameController.getInstance().update(0.1f);
+            counter++;
         }
 
         assertTrue(GameController.getInstance().getBirdBodies().get(0).getY() > GameController.ROOM_HEIGHT / 2);
-
-        GameModel.getInstance().dispose();
-        GameController.getInstance().dispose();
     }
 
     /**
@@ -57,6 +62,8 @@ public class GameControllerTest extends GameTest{
      */
     @org.junit.Test
     public void headingChangeAfterEdgeHit() throws Exception {
+        GameModel.getInstance().dispose();
+        GameController.getInstance().dispose();
 
         boolean END = false;
 
@@ -67,9 +74,6 @@ public class GameControllerTest extends GameTest{
         }
 
         assertFalse(GameModel.getInstance().getBird().get(0).isHeadRight());
-
-        GameModel.getInstance().dispose();
-        GameController.getInstance().dispose();
     }
 
     /**
@@ -79,6 +83,8 @@ public class GameControllerTest extends GameTest{
      */
     @org.junit.Test
     public void spikeColorChangeAfterCollision() throws Exception {
+        GameModel.getInstance().dispose();
+        GameController.getInstance().dispose();
 
         boolean END = false;
 
@@ -99,9 +105,6 @@ public class GameControllerTest extends GameTest{
 
         assertTrue(hasRedTexture);
         assertTrue(count == 1);
-
-        GameModel.getInstance().dispose();
-        GameController.getInstance().dispose();
     }
 
     /**
@@ -110,6 +113,8 @@ public class GameControllerTest extends GameTest{
      */
     @org.junit.Test
     public void bonusAppearsAndDisappears() throws Exception {
+        GameModel.getInstance().dispose();
+        GameController.getInstance().dispose();
 
         GameController.getInstance().setJumpEnabled(false);
         GameController.getInstance().setLosingEnabled(false);
@@ -134,9 +139,6 @@ public class GameControllerTest extends GameTest{
                     END2 = true;
                 }
         }
-
-        GameModel.getInstance().dispose();
-        GameController.getInstance().dispose();
     }
 
     /**
@@ -144,6 +146,9 @@ public class GameControllerTest extends GameTest{
      */
     @org.junit.Test
     public void scoreIncrementAfterEdgeHit() {
+        GameModel.getInstance().dispose();
+        GameController.getInstance().dispose();
+
         GameController.getInstance().setJumpEnabled(false);
         GameController.getInstance().setLosingEnabled(false);
 
@@ -164,16 +169,16 @@ public class GameControllerTest extends GameTest{
             currentScore = GameModel.getInstance().getGAME_SCORE();
             currentSpeed = GameController.getInstance().getBirdXSpeed();
         }
-
-        GameModel.getInstance().dispose();
-        GameController.getInstance().dispose();
     }
 
     /**
      * Test if score is incremented upon colliding with a bonus.
      */
-    @org.junit.Test
+    @org.junit.Test(timeout = 5000)
     public void scoreIncrementAfterBonusCatch() {
+        GameModel.getInstance().dispose();
+        GameController.getInstance().dispose();
+
         GameController.getInstance().setJumpEnabled(false);
         GameController.getInstance().setLosingEnabled(false);
         GameModel.getInstance().setBonusStill(true);
@@ -187,15 +192,13 @@ public class GameControllerTest extends GameTest{
         while (!END1) {
             GameController.getInstance().update(0.01f);
 
-            if (GameModel.getInstance().getBonus() != null)
+            if (GameModel.getInstance().getBonus() != null) {
+
                 if (GameController.getInstance().isBonusCollided())
                     if (GameModel.getInstance().getGAME_SCORE() == currentScore + 1)
                         END1 = true;
-
+            }
             currentScore = GameModel.getInstance().getGAME_SCORE();
         }
-
-        GameModel.getInstance().dispose();
-        GameController.getInstance().dispose();
     }
 }

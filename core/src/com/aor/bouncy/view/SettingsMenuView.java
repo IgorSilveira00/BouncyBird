@@ -16,9 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public class SettingsMenuView extends ScreenAdapter implements ApplicationListener, InputProcessor{
     //test
     static int RED = 20, GREEN = 50, BLUE = 200;
-
-    private SettingsMenuView instance = this;
-
     /**
      * How much meters does a pixel represent
      */
@@ -107,17 +104,17 @@ public class SettingsMenuView extends ScreenAdapter implements ApplicationListen
         BACK_BUTTON.setPosition(Gdx.graphics.getWidth() - BACK_BUTTON.getWidth(),
                 0);
 
-        checkBoxStyle.font = font;
+        checkBoxStyle.font = MainMenuView.getBitmapFont();
         checkBoxStyle.checkboxOn = skin.getDrawable("checked");
         checkBoxStyle.checkboxOff = skin.getDrawable("unchecked");
 
         //Music checkbox.
-        MUSIC_CHECK = new CheckBox(" Music", checkBoxStyle);
+        MUSIC_CHECK = new CheckBox("   Music", checkBoxStyle);
         MUSIC_CHECK.setPosition(Gdx.graphics.getWidth() / 2f - MUSIC_CHECK.getWidth() / 2f,
                 Gdx.graphics.getHeight() / 2f + MUSIC_CHECK.getHeight() / 2f);
 
         //FX checkbox.
-        FX_CHECK = new CheckBox(" FX Sounds", checkBoxStyle);
+        FX_CHECK = new CheckBox("   FX Sounds", checkBoxStyle);
         FX_CHECK.setPosition(MUSIC_CHECK.getX(),
                 MUSIC_CHECK.getY() - 2 * FX_CHECK.getHeight());
 

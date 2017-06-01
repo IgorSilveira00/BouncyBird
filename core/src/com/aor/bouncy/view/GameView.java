@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -220,12 +221,10 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 b2 = new TextButton.TextButtonStyle(),
                 b3 = new TextButton.TextButtonStyle();
 
-        MainMenuView.readTexture("play-up", "play-up.png", textureAtlas);
-        MainMenuView.readTexture("back-up", "back-up.png", textureAtlas);
-        MainMenuView.readTexture("back-down", "back-down.png", textureAtlas);
-        MainMenuView.readTexture("play-down", "play-down.png", textureAtlas);
-        MainMenuView.readTexture("settings-up", "settings-up.png", textureAtlas);
-        MainMenuView.readTexture("settings-down", "settings-down.png", textureAtlas);
+        MainMenuView.readTexture("resume-up", "resume_up.png", textureAtlas);
+        MainMenuView.readTexture("resume-down", "resume_down.png", textureAtlas);
+        MainMenuView.readTexture("restart-up", "restart_up.png", textureAtlas);
+        MainMenuView.readTexture("restart-down", "restart_down.png", textureAtlas);
         MainMenuView.readTexture("exit-up", "exit-up.png", textureAtlas);
         MainMenuView.readTexture("exit-down", "exit-down.png", textureAtlas);
         skin.addRegions(textureAtlas);
@@ -235,23 +234,25 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         b3.font = font;
 
         //for the resume button
-        b1.up = skin.getDrawable("play-up");
-        b1.down = skin.getDrawable("play-down");
+        b1.up = skin.getDrawable("resume-up");
+        b1.down = skin.getDrawable("resume-down");
         RESUME_BUTTON = new TextButton("", b1);
-        RESUME_BUTTON.setPosition(Gdx.graphics.getWidth() / 2f - RESUME_BUTTON.getWidth() / 2f,
-                Gdx.graphics.getHeight() / 2f + RESUME_BUTTON.getHeight() / 2f);
+        RESUME_BUTTON.setPosition(Gdx.graphics.getWidth() / 4f - RESUME_BUTTON.getWidth() / 1.4f,
+                Gdx.graphics.getHeight() / 2f - RESUME_BUTTON.getHeight() / 2f);
 
         //for the restart button
-        b2.up = skin.getDrawable("settings-up");
-        b2.down = skin.getDrawable("settings-down");
+        b2.up = skin.getDrawable("restart-up");
+        b2.down = skin.getDrawable("restart-down");
         RESTART_BUTTON = new TextButton("", b2);
-        RESTART_BUTTON.setPosition(RESUME_BUTTON.getX(), RESUME_BUTTON.getY() - RESTART_BUTTON.getHeight());
+        RESTART_BUTTON.setPosition(Gdx.graphics.getWidth() / 2f - RESTART_BUTTON.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - RESTART_BUTTON.getHeight() / 2f);
 
         //for the exit button
         b3.up = skin.getDrawable("exit-up");
         b3.down = skin.getDrawable("exit-down");
         EXIT_BUTTON = new TextButton("", b3);
-        EXIT_BUTTON.setPosition(RESTART_BUTTON.getX(), RESTART_BUTTON.getY() - EXIT_BUTTON.getHeight());
+        EXIT_BUTTON.setPosition(3 * Gdx.graphics.getWidth() / 4f - EXIT_BUTTON.getWidth() / 4f,
+                Gdx.graphics.getHeight() / 2f - EXIT_BUTTON.getHeight() / 2f);
 
         stage.addActor(RESUME_BUTTON);
         stage.addActor(RESTART_BUTTON);
@@ -335,17 +336,12 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      * @return the score Label.
      */
     private void createLabel() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("label.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 200;
-        parameter.borderColor = Color.BLACK;
-        parameter.borderWidth = 4;
-        BitmapFont font = generator.generateFont(parameter); // font size 12 pixels
-        generator.dispose(); // don't forget to dispose to avoid memory leaks!
         scoreLabel = new Label(Integer.toString(GameModel.getInstance().getGAME_SCORE()),
-                new Label.LabelStyle(font, null));
+                new Label.LabelStyle(MainMenuView.getBitmapFont(), null));
         scoreLabel.setPosition(VIEWPORT_WIDTH / PIXEL_TO_METER / 2f,
                 VIEWPORT_HEIGHT / PIXEL_TO_METER / 2.5f);
+
+        scoreLabel.setFontScale(5);
 
         scoreLabel.setColor(Color.WHITE);
     }
@@ -400,8 +396,6 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
     public void render(float delta) {
 
         handleInputs(delta);
-        System.out.println("Altura: " + Gdx.graphics.getHeight() * PIXEL_TO_METER);
-        System.out.println("Passaro: " + GameModel.getInstance().getBird().get(0).getY());
 
         //While not both players are ready the controller is not activated.
         if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
@@ -423,8 +417,8 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         } else {
             //If at least one is not ready, the bird is not flying.
             GameModel.getInstance().getBird().get(0).setFlying(false);
-                if (isTWO_PLAYERS())
-                    GameModel.getInstance().getBird().get(1).setFlying(false);//If at least one is not ready, the bird is not flying.
+            if (isTWO_PLAYERS())
+                GameModel.getInstance().getBird().get(1).setFlying(false);//If at least one is not ready, the bird is not flying.
         }
 
         game.getBatch().setProjectionMatrix(camera.combined);
@@ -434,6 +428,7 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         game.getBatch().begin();
+
         drawBackground();
 
         //Game Over happened.
@@ -497,6 +492,9 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 countdownTimer();
             }
         }
+
+        if (IS_PAUSED)
+            drawFadedBack();
 
         game.getBatch().end();
 
@@ -744,6 +742,12 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         game.getBatch().draw(background, 0, 0, 0, 0, (int)(ROOM_WIDTH / PIXEL_TO_METER), (int) (ROOM_HEIGHT / PIXEL_TO_METER));
     }
 
+    private void drawFadedBack() {
+        Texture background = game.getAssetManager().get("faded_back.png", Texture.class);
+        background.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);
+        game.getBatch().draw(background, 0, 0, 0, 0, (int)(ROOM_WIDTH / PIXEL_TO_METER), (int) (ROOM_HEIGHT / PIXEL_TO_METER));
+    }
+
     @Override
     public void create() {
     }
@@ -784,25 +788,18 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
         if (TWO_PLAYERS) {
             if (Gdx.input.getY() > Gdx.graphics.getHeight() / 2f) {
                 //If touch height higher than half total height, touch is to player 1.
-                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                    playJump();
+                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING)
                     bluePlayerPointer = pointer;
-                }
                 READY_PLAYER_TWO = true;
             }
             else if (Gdx.input.getY() < Gdx.graphics.getHeight() / 2f) {
                 //If touch height lower than half total height, touch is to player 2.
-                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                    playJump();
+                if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING)
                     redPlayerPointer = pointer;
-                }
                 READY_PLAYER_ONE = true;
             }
-        }
-        else {
-            //First touch is to ready up only, prevent controller updates right away.
-            if (READY_PLAYER_ONE && READY_PLAYER_TWO && IS_RUNNING) {
-                playJump();
+        } else {
+            if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
                 lastTouch = 1;
                 redPlayerPointer = pointer;
             }
@@ -814,10 +811,14 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (IS_RUNNING) {
-            if (pointer == bluePlayerPointer)
+            if (pointer == bluePlayerPointer) {
+                playJump();
                 GameController.getInstance().jump(1);
-            if (pointer == redPlayerPointer)
+            }
+            if (pointer == redPlayerPointer) {
+                playJump();
                 GameController.getInstance().jump(0);
+            }
         }
         return false;
     }
