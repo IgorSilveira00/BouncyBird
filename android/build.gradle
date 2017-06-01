@@ -1,3 +1,4 @@
+apply plugin: 'com.android.application'
 android {
     buildToolsVersion "25.0.2"
     compileSdkVersion 25
