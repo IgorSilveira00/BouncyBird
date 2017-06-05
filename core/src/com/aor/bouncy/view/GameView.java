@@ -14,18 +14,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.List;
 
@@ -76,6 +73,11 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      * automatically calculated using the screen ratio.
      */
     public static final float VIEWPORT_WIDTH = 60;
+
+    /**
+     * The height of the viewport in meters.
+     * Calculated from the graphics and the viewport width.
+     */
     public static float VIEWPORT_HEIGHT;
 
     /**
@@ -160,9 +162,14 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
      */
     private boolean END = false;
 
-    private static long lastShake = 0;
+    /**
+     * Time in miliseconds when the last shake was performed.
+     */
+    private static long last_shook_time = 0;
 
-    private static int lastTouch = 0;
+    /**
+     * Used to prevent infinite resizing.
+     */
     private boolean firstTimeResize = true;
 
     /**
@@ -620,15 +627,13 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 GameController.getInstance().jump(0);
             }
             READY_PLAYER_ONE = true;
-        } else if (System.currentTimeMillis() - lastShake > 250 && !TWO_PLAYERS) {
+        } else if (System.currentTimeMillis() - last_shook_time > 250 && !TWO_PLAYERS) {
 
             float gyroY = Gdx.input.getGyroscopeY();
 
             if (Math.abs(gyroY) > 5) {
-                ++lastTouch;
-                if (lastTouch >= 0)
-                    GameController.getInstance().jump(0);
-                lastShake = System.currentTimeMillis();
+                GameController.getInstance().jump(0);
+                last_shook_time = System.currentTimeMillis();
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isTWO_PLAYERS()) {
                 //First touch is to ready up only, prevent controller updates right away.
@@ -799,10 +804,8 @@ public class GameView extends ScreenAdapter implements InputProcessor, Applicati
                 READY_PLAYER_ONE = true;
             }
         } else {
-            if (READY_PLAYER_ONE && READY_PLAYER_TWO) {
-                lastTouch = 1;
+            if (READY_PLAYER_ONE && READY_PLAYER_TWO)
                 redPlayerPointer = pointer;
-            }
             READY_PLAYER_ONE = true;
         }
         return false;

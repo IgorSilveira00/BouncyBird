@@ -90,6 +90,9 @@ public class MainMenuView extends ScreenAdapter {
      */
     private static Sound MOUSE_CLICK;
 
+    /**
+     * Font used for FreeType module of Libgdx.
+     */
     private static BitmapFont bitmapFont;
 
     /**
